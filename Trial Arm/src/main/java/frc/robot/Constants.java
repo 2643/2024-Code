@@ -16,6 +16,11 @@ public final class Constants {
   public static final int motor1Port = 0;
   public static final int motor2Port = 0;
   public static final int limitPort = 0;
+
+  public static final double REST = 0;
+  public static final double SHOOTER = 0;
+  public static final double HOOK = 0;
+  public static final double FLOOR = 0;
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }

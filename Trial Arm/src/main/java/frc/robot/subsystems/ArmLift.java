@@ -10,32 +10,62 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Constants;
 
-public static enum positionStates { //Learn how to make state machine
+public class ArmLift extends SubsystemBase {
+
+  public static enum positionStates { //Learn how to make state machine
     FLOOR,
+    PICKUP,
     AMP,
     HOOK,
-}
+    SPEAKER,
+    REST
+  }
+  
+    public static enum ArmLiftStates {
+      NOT_INITIALIZED,
+      INITIALIZING_CALLED,
+      INITIALIZING,
+      INITIALIZED
+    }
 
-public class ArmLift extends SubsystemBase {
-    TalonFX leftMotor = new TalonFX(Constants.motor1Port);
-    Follower rightMotor = new Follower(Constants.motor1Port, true);
+    //motors
+
+    ArmLiftStates ArmLiftState = ArmLiftStates.NOT_INITIALIZED;
+
+    TalonFX leftarmMotor = new TalonFX(Constants.motor1Port);
+    TalonFX rightarmMotor = new TalonFX(Constants.motor2Port);
+
+    //limit switches
     DigitalInput limit = new DigitalInput(Constants.limitPort);
 
   /** Creates a new ArmLift. */
   public ArmLift() {
-    //Insert Configurations (ask rayrith)
+    leftarmMotor.setControl(new Follower(Constants.motor2Port, true));
   }
 
   public void getPos() {
-    leftMotor.getPosition();
+    leftarmMotor.getPosition();
   }
 
   public void setPos(double pos) {
-    leftMotor.setPosition(pos);
+    leftarmMotor.setControl(new PositionDutyCycle(pos));
   }
 
-  public void destroyMotor() {
-    
+  public void movePos(double pos) {
+    leftarmMotor.setControl(new MotionMagicDutyCycle(pos));
+  }
+
+  public ArmLiftStates getArmLiftState() {
+    return ArmLiftState;
+  }
+
+  public void setArmLiftState (ArmLiftStates state) {
+    ArmLiftState = state;
+  }
+
+  public void reset(){
+    setPos(0);
+    movePos(0);
   }
 
   @Override
