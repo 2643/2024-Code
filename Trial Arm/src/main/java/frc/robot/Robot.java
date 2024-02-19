@@ -4,10 +4,16 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import frc.robot.commands.Arm.*;
+import frc.robot.subsystems.ArmLift;
+import frc.robot.subsystems.ArmLift.ArmLiftStates;
+import frc.robot.subsystems.ArmLift.positionStates;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -19,15 +25,17 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private positionStates isCurrentPos = positionStates.REST;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    m_robotContainer = new RobotContainer();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
   }
 
   /**
@@ -56,7 +64,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // CommandScheduler.getInstance().schedule(new ResetPosition());
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -74,6 +83,11 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    //MYSTERY ACTOR HERE
+    
+
+    
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -81,7 +95,17 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+ 
+    if (isCurrentPos != ArmLift.getPositionState()) {
+      isCurrentPos = ArmLift.getPositionState();
+      CommandScheduler.getInstance().schedule(new ArmMove(isCurrentPos));
+    }
+   
+    if(RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZING) {
+      CommandScheduler.getInstance().schedule(new ResetPosition());
+    }
+  }
 
   @Override
   public void testInit() {
