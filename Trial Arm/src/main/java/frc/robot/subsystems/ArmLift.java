@@ -27,12 +27,12 @@ public class ArmLift extends SubsystemBase {
 
   Timer time;
 
-  public static enum moveJoystick {
+  public static enum moveJoystick { //States to check wwhat direction the joystick is moving
     Up,
     Down
   }
 
-  public static enum positionStates { // Learn how to make state machine
+  public static enum positionStates { //Different position states for the arm to move
     FLOOR,
     AMP,
     HOOK,
@@ -40,11 +40,14 @@ public class ArmLift extends SubsystemBase {
     REST
   }
 
-  public static enum ArmLiftStates {
+  public static enum ArmLiftStates { //Different states that determines what stage the arm is in.
     NOT_INITIALIZED,
     INITIALIZING,
     INITIALIZED
   }
+  
+  //Configurations:
+
 
   // motors
 
@@ -64,14 +67,11 @@ public class ArmLift extends SubsystemBase {
   ArmLiftStates ArmLiftState = ArmLiftStates.INITIALIZING;
   static positionStates positionState = positionStates.REST;
 
-  /** Creates a new ArmLift. */
-
   // PID
   GenericEntry pEntry = Shuffleboard.getTab("PID").add("Proportional", 0).getEntry();
   GenericEntry iEntry = Shuffleboard.getTab("PID").add("Integral", 0).getEntry();
   GenericEntry dEntry = Shuffleboard.getTab("PID").add("Derivative",0).getEntry();
   GenericEntry FFEntry = Shuffleboard.getTab("PID").add("Feed Forward",0).getEntry();
-
 
 
   // motion magic velocity and acceleration
@@ -84,18 +84,19 @@ public class ArmLift extends SubsystemBase {
   GenericEntry PosErrEntry = Shuffleboard.getTab("PID").add("Pos Err", 0).getEntry();
 
   // requests
-  final MotionMagicVoltage m_position = new MotionMagicVoltage(currentArmEncoderPos, false, AuxiliaryFF, 0, true, true, true);
+  final MotionMagicVoltage m_position = new MotionMagicVoltage(0);
 
   public ArmLift() {
 
+    //PID/Velocity configurations make sure that the motionMagic and slot0 configs are under var!
     TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
     var slot0Configs = talonFXConfigs.Slot0;    
 
-    slot0Configs.kP = 2.5;
-    slot0Configs.kI = 0;
-    slot0Configs.kD = 0;
-    slot0Configs.kV = 0;
+    slot0Configs.kP = 2.5; //Proportional
+    slot0Configs.kI = 0; //Integral
+    slot0Configs.kD = 0; //Derivative
+    slot0Configs.kV = 0; //Velocity
     
     motionMagicConfigs.MotionMagicAcceleration = 2; // Target acceleration 
     motionMagicConfigs.MotionMagicCruiseVelocity = 2; // Target velocity
@@ -103,7 +104,7 @@ public class ArmLift extends SubsystemBase {
     leftarmMotor.getConfigurator().apply(talonFXConfigs);
 
 
-    rightarmMotor.setControl(new Follower(Constants.leftmotorPort, true));
+    rightarmMotor.setControl(new Follower(Constants.leftmotorPort, true)); //Follower master the rightarmMotor is reversed b/c double linked arm
   }
 
   public double getPos() {
@@ -120,6 +121,8 @@ public class ArmLift extends SubsystemBase {
 
   public void movePos(double pos) {
     leftarmMotor.setControl(m_position.withPosition(pos));
+
+    // leftarmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
     setTargetPos(pos);
   }
 
@@ -161,7 +164,7 @@ public class ArmLift extends SubsystemBase {
     return accelEntry.getDouble(0);
   }
 
-  public static positionStates armPlacement(double ctrlValue) {
+  public static positionStates armPlacement(double ctrlValue) { //Checks the 
     if (ctrlValue <= 0.05 && ctrlValue >= 0.02) 
       return positionStates.SPEAKER;
     else if (ctrlValue <= -0.33 && ctrlValue >= -0.36)
@@ -217,7 +220,7 @@ public class ArmLift extends SubsystemBase {
     switch(ArmLiftState) {
       case NOT_INITIALIZED:
         break;
-      case INITIALIZING: 
+      case INITIALIZING:
         // CommandScheduler.getInstance().schedule(new ResetPosition()); Only works in RobotContainer (Configure bindings) and Robot
         break;
       case INITIALIZED:

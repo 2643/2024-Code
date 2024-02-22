@@ -16,14 +16,14 @@ public class ArmMove extends Command {
   /** Creates a new ArmLift. */
   public ArmMove(ArmLift.positionStates state) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.m_armLift);
+    addRequirements(RobotContainer.m_armLift); //Used to add parameters to the subsystem
     this.state = state;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println(state);
+    System.out.println(state); //Check what state it is in
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +34,7 @@ public class ArmMove extends Command {
   @Override
   public void end(boolean interrupted) {
     if(state == ArmLift.positionStates.AMP) { //Checks what state the arm is set to right now and moves to the corresponding position
-       RobotContainer.m_armLift.movePos(Constants.AMP*Constants.gearRatio);
+       RobotContainer.m_armLift.movePos(Constants.AMP * Constants.gearRatio);
     }
     else if(state == ArmLift.positionStates.FLOOR) {
         RobotContainer.m_armLift.movePos(Constants.FLOOR * Constants.gearRatio);
