@@ -14,15 +14,15 @@ public class ResetPosition extends Command {
   boolean flag = false;
   /** Creates a new ResetPosition. */
   public ResetPosition() {
-   
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(RobotContainer.m_armLift);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-     RobotContainer.m_armLift.setVelocity(0.5);
-    // RobotContainer.m_armLift.setAcceleration(2);
+    // RobotContainer.m_armLift.setVelocity(0.5); Doesn't work
+    // RobotContainer.m_armLift.setAcceleration(2); Doesn't work
      if(RobotContainer.m_armLift.getLimitSwitch()) {
       RobotContainer.m_armLift.movePos(-0.3);
     } else {
@@ -50,7 +50,7 @@ public class ResetPosition extends Command {
   public void end(boolean interrupted) {
     RobotContainer.m_armLift.setPos(0);
     RobotContainer.m_armLift.movePos(0);
-    // RobotContainer.m_armLift.setVelocity(2);
+    // RobotContainer.m_armLift.setVelocity(2); Doesn't work
   }
 
   // Returns true when the command should end.

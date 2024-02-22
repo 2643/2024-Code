@@ -4,22 +4,17 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
+// import com.ctre.phoenix6.configs.MotionMagicConfigs;
+// import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-
-import commands.Arm.ArmMove;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -89,14 +84,10 @@ public class ArmLift extends SubsystemBase {
   GenericEntry PosErrEntry = Shuffleboard.getTab("PID").add("Pos Err", 0).getEntry();
 
   // requests
-  final MotionMagicVoltage m_position = new MotionMagicVoltage(0);
-  final MotionMagicVelocityVoltage m_velocity = new MotionMagicVelocityVoltage(0);
+  final MotionMagicVoltage m_position = new MotionMagicVoltage(currentArmEncoderPos, false, AuxiliaryFF, 0, true, true, true);
 
   public ArmLift() {
 
-  
-    // 5 rotations per second cruise
-    // Take approximately 0.5 seconds to reach max vel
     TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
     var slot0Configs = talonFXConfigs.Slot0;    
@@ -123,7 +114,7 @@ public class ArmLift extends SubsystemBase {
     leftarmMotor.setPosition(pos);
   }
 
-  // public void setSpeed(double speed) {
+  // public void setSpeed(double speed) { Doesn't work
   //   leftarmMotor.set(speed);
   // }
 
@@ -145,14 +136,14 @@ public class ArmLift extends SubsystemBase {
     return limitSwitch.get();
   }
 
-  public void setVelocity(double val) {
-    leftarmMotor.setControl(m_velocity.withVelocity(val));
+  // public void setVelocity(double val) { Doesn't work
+  //   leftarmMotor.setControl(m_velocity.withVelocity(val));
     // var motionMagicConfigs = new MotionMagicConfigs();
     // motionMagicConfigs.MotionMagicCruiseVelocity = val;
     // leftarmMotor.getConfigurator().apply(motionMagicConfigs);
-  }
+  // }
 
-  // public void setAcceleration(double val) {
+  // public void setAcceleration(double val) { Doesn't work
   //   var motionMagicConfigs = new MotionMagicConfigs();
   //   motionMagicConfigs.MotionMagicAcceleration = val;
   //   leftarmMotor.getConfigurator().apply(motionMagicConfigs);
@@ -162,9 +153,9 @@ public class ArmLift extends SubsystemBase {
     return velEntry.getDouble(0);
   }
 
-  // public void setAcceleration(double val) {
-  //   accelEntry.setDouble(val);
-  // }
+  public void setAcceleration(double val) { 
+    accelEntry.setDouble(val);
+  }
 
   public double getAccel() {
     return accelEntry.getDouble(0);
@@ -205,13 +196,19 @@ public class ArmLift extends SubsystemBase {
     leftarmMotor.disable();
   }
 
+  public void setFF(double val) {
+    FFEntry.setDouble(val);
+  }
+
   @Override
   public void periodic() {
+
     AuxiliaryFF = 0.17 * Math.sin(Math.toRadians((getPos())));
+    setFF(AuxiliaryFF);
 
     // System.out.println(limitSwitch.get()); Limit switch testing  
     // This method will be called once per scheduler run
-    
+
     currentPosEntry.setDouble(getPos());
     PosErrEntry.setDouble(targetPosEntry.getDouble(0) - currentPosEntry.getDouble(0));
     // movePos(targetPosEntry.getDouble(0)); Ruins the positionState change
@@ -221,7 +218,7 @@ public class ArmLift extends SubsystemBase {
       case NOT_INITIALIZED:
         break;
       case INITIALIZING: 
-        // CommandScheduler.getInstance().schedule(new ResetPosition());
+        // CommandScheduler.getInstance().schedule(new ResetPosition()); Only works in RobotContainer (Configure bindings) and Robot
         break;
       case INITIALIZED:
           currentPos = armPlacement(RobotContainer.operatorBoard.getRawAxis(Constants.ENCODER_PORT));
