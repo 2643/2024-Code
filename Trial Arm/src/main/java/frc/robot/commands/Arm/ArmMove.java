@@ -34,20 +34,20 @@ public class ArmMove extends Command {
   @Override
   public void end(boolean interrupted) {
     if(state == ArmLift.positionStates.AMP) { //Checks what state the arm is set to right now and moves to the corresponding position
-       RobotContainer.m_armLift.movePos(Constants.AMP);
+       RobotContainer.m_armLift.movePos(Constants.AMP*Constants.gearRatio);
     }
     else if(state == ArmLift.positionStates.FLOOR) {
-        RobotContainer.m_armLift.movePos(Constants.FLOOR);
+        RobotContainer.m_armLift.movePos(Constants.FLOOR * Constants.gearRatio);
     }
     else if(state == ArmLift.positionStates.SPEAKER) {
-      RobotContainer.m_armLift.movePos(Constants.SPEAKER);
+      RobotContainer.m_armLift.movePos(Constants.SPEAKER *Constants.gearRatio );
     }
-    else if(state == ArmLift.positionStates.REST) {
+    else if(state == ArmLift.positionStates.REST ) {
+      RobotContainer.m_armLift.movePos(Constants.REST * Constants.gearRatio);
     }
     else if(state == ArmLift.positionStates.HOOK) {
-        RobotContainer.m_armLift.movePos(Constants.HOOK);
+        RobotContainer.m_armLift.movePos(Constants.HOOK * Constants.gearRatio);
     }
-    System.out.println(RobotContainer.m_armLift.getPos());
   }
 
   

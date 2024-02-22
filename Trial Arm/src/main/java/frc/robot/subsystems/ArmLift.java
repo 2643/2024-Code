@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -53,6 +56,7 @@ public class ArmLift extends SubsystemBase {
   TalonFX leftarmMotor = new TalonFX(Constants.leftmotorPort);
   TalonFX rightarmMotor = new TalonFX(Constants.rightmotorPort);
 
+
   // limit switches
 
   DigitalInput limitSwitch = new DigitalInput(Constants.limitPort);
@@ -71,6 +75,8 @@ public class ArmLift extends SubsystemBase {
   GenericEntry pEntry = Shuffleboard.getTab("PID").add("Proportional", 0).getEntry();
   GenericEntry iEntry = Shuffleboard.getTab("PID").add("Integral", 0).getEntry();
   GenericEntry dEntry = Shuffleboard.getTab("PID").add("Derivative",0).getEntry();
+  GenericEntry FFEntry = Shuffleboard.getTab("PID").add("Feed Forward",0).getEntry();
+
 
 
   // motion magic velocity and acceleration
@@ -84,42 +90,50 @@ public class ArmLift extends SubsystemBase {
 
   // requests
   final MotionMagicVoltage m_position = new MotionMagicVoltage(0);
+  final MotionMagicVelocityVoltage m_velocity = new MotionMagicVelocityVoltage(0);
 
   public ArmLift() {
-    
-    var slot0Configs = new Slot0Configs();
 
-    slot0Configs.kP = 2.35;
+  
+    // 5 rotations per second cruise
+    // Take approximately 0.5 seconds to reach max vel
+    TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
+    var motionMagicConfigs = talonFXConfigs.MotionMagic;
+    var slot0Configs = talonFXConfigs.Slot0;    
+
+    slot0Configs.kP = 2.5;
     slot0Configs.kI = 0;
     slot0Configs.kD = 0;
     slot0Configs.kV = 0;
     
+    motionMagicConfigs.MotionMagicAcceleration = 2; // Target acceleration 
+    motionMagicConfigs.MotionMagicCruiseVelocity = 2; // Target velocity
 
-    leftarmMotor.getConfigurator().apply(slot0Configs);
+    leftarmMotor.getConfigurator().apply(talonFXConfigs);
+
 
     rightarmMotor.setControl(new Follower(Constants.leftmotorPort, true));
   }
 
   public double getPos() {
-    return leftarmMotor.get();
+    return leftarmMotor.getPosition().getValueAsDouble();
   }
 
   public void setPos(double pos) {
-    leftarmMotor.setPosition(0);
-
+    leftarmMotor.setPosition(pos);
   }
 
+  // public void setSpeed(double speed) {
+  //   leftarmMotor.set(speed);
+  // }
+
   public void movePos(double pos) {
-    // boolean init = true;
-    // if (init){
-    //   init = false;
-    //   time.wait();
-    // }
     leftarmMotor.setControl(m_position.withPosition(pos));
+    setTargetPos(pos);
   }
 
   public void setArmLiftState(ArmLiftStates state) {
-    ArmLiftState = state;
+    ArmLiftState = state; 
   }
 
   public void reset() {
@@ -132,34 +146,43 @@ public class ArmLift extends SubsystemBase {
   }
 
   public void setVelocity(double val) {
-    velEntry.setDouble(val);
+    leftarmMotor.setControl(m_velocity.withVelocity(val));
+    // var motionMagicConfigs = new MotionMagicConfigs();
+    // motionMagicConfigs.MotionMagicCruiseVelocity = val;
+    // leftarmMotor.getConfigurator().apply(motionMagicConfigs);
   }
+
+  // public void setAcceleration(double val) {
+  //   var motionMagicConfigs = new MotionMagicConfigs();
+  //   motionMagicConfigs.MotionMagicAcceleration = val;
+  //   leftarmMotor.getConfigurator().apply(motionMagicConfigs);
+  // }
 
   public double getVelocity() {
     return velEntry.getDouble(0);
   }
 
-  public void setAcceleration(double val) {
-    accelEntry.setDouble(val);
-  }
+  // public void setAcceleration(double val) {
+  //   accelEntry.setDouble(val);
+  // }
 
   public double getAccel() {
     return accelEntry.getDouble(0);
   }
 
   public static positionStates armPlacement(double ctrlValue) {
-    if (ctrlValue <= 0.3 && ctrlValue >= 0.27) 
-      return positionStates.HOOK;
-    else if (ctrlValue <= -0.33 && ctrlValue >= -0.36)
-      return positionStates.AMP;
-    else if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
-      return positionStates.FLOOR;
-    else if (ctrlValue <= -0.54 && ctrlValue >= -0.57)
-      return positionStates.REST; 
-    else if (ctrlValue <= 0.05 && ctrlValue >= 0.02)
+    if (ctrlValue <= 0.05 && ctrlValue >= 0.02) 
       return positionStates.SPEAKER;
-    else
+    else if (ctrlValue <= -0.33 && ctrlValue >= -0.36)
+      return positionStates.HOOK;
+    else if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
+      return positionStates.AMP;
+    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
+      return positionStates.FLOOR; 
+    else if (ctrlValue <= -0.26 && ctrlValue >= 0.29)
       return positionStates.REST;
+    else
+      return currentPos;
   }
 
   public static positionStates getPositionState() {
@@ -168,6 +191,10 @@ public class ArmLift extends SubsystemBase {
 
   public ArmLiftStates getArmLiftState() {
     return ArmLiftState;
+  }
+
+  public void setTargetPos(double pos) {
+    targetPosEntry.setDouble(pos);
   }
 
   public void runMotor() {
@@ -180,10 +207,11 @@ public class ArmLift extends SubsystemBase {
 
   @Override
   public void periodic() {
-    AuxiliaryFF = -0.019 * Math.sin(Math.toRadians((getPos()/Constants.COUNT_PER_DEGREES) + 47));
+    AuxiliaryFF = 0.17 * Math.sin(Math.toRadians((getPos())));
 
     // System.out.println(limitSwitch.get()); Limit switch testing  
     // This method will be called once per scheduler run
+    
     currentPosEntry.setDouble(getPos());
     PosErrEntry.setDouble(targetPosEntry.getDouble(0) - currentPosEntry.getDouble(0));
     // movePos(targetPosEntry.getDouble(0)); Ruins the positionState change

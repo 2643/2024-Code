@@ -13,16 +13,17 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final int gearRatio = 1; //change to 151 once you get on the robot  
   public static final int leftmotorPort = 4;  
   public static final int rightmotorPort = 0;
   public static final int limitPort = 1;
   public static final int ENCODER_PORT = 2;
 
-  public static final double AMP = 1;
+  public static final double AMP = 0.08;
   public static final double REST = 0;
-  public static final double SPEAKER = 1.5;
-  public static final double HOOK = 2;
-  public static final double FLOOR = 0.5;
+  public static final double SPEAKER = 0.32;
+  public static final double HOOK = 0.16;
+  public static final double FLOOR = 0.04;
   public static final double COUNT_PER_DEGREES = 0;
 
 

@@ -97,7 +97,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
  
-    if (isCurrentPos != ArmLift.getPositionState()) {
+    if (isCurrentPos != ArmLift.getPositionState() && RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZED) {
       isCurrentPos = ArmLift.getPositionState();
       CommandScheduler.getInstance().schedule(new ArmMove(isCurrentPos));
     }
