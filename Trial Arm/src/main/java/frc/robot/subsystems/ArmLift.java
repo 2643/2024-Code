@@ -98,8 +98,8 @@ public class ArmLift extends SubsystemBase {
     slot0Configs.kD = 0; //Derivative
     slot0Configs.kV = 0; //Velocity
     
-    motionMagicConfigs.MotionMagicAcceleration = 2; // Target acceleration 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 2; // Target velocity
+    motionMagicConfigs.MotionMagicAcceleration = 10; // Target acceleration 
+    motionMagicConfigs.MotionMagicCruiseVelocity = 10; // Target velocity
 
     leftarmMotor.getConfigurator().apply(talonFXConfigs);
 
@@ -121,8 +121,7 @@ public class ArmLift extends SubsystemBase {
 
   public void movePos(double pos) {
     leftarmMotor.setControl(m_position.withPosition(pos));
-
-    // leftarmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
+    leftarmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
     setTargetPos(pos);
   }
 
@@ -173,7 +172,7 @@ public class ArmLift extends SubsystemBase {
       return positionStates.AMP;
     else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
       return positionStates.FLOOR; 
-    else if (ctrlValue <= -0.26 && ctrlValue >= 0.29)
+    else if (ctrlValue <= -0.26 && ctrlValue >= -0.29)
       return positionStates.REST;
     else
       return currentPos;

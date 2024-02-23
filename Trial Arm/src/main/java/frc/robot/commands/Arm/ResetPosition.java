@@ -22,23 +22,26 @@ public class ResetPosition extends Command {
   public void initialize() {
     // RobotContainer.m_armLift.setVelocity(0.5); Doesn't work
     // RobotContainer.m_armLift.setAcceleration(2); Doesn't work
-     if(RobotContainer.m_armLift.getLimitSwitch()) { //If the arm is on the limit switch
-      RobotContainer.m_armLift.movePos(-0.3);
-      } 
-    else { //If the arm is not on the limit switch
+     if(!RobotContainer.m_armLift.getLimitSwitch()) { //If the arm is on the limit switch
+      // RobotContainer.m_armLift.movePos(-0.3);
       System.out.println("Arm not on limit switch. Disabling motor.");
       RobotContainer.m_armLift.disableMotor();
       RobotContainer.m_armLift.setArmLiftState(ArmLiftStates.NOT_INITIALIZED);
       flag = true;
-      }
+      } 
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!(RobotContainer.m_armLift.getLimitSwitch()) && flag == false) { //Checks if the arm moved out of the limit switch
+    if(!(RobotContainer.m_armLift.getLimitSwitch())) { //Checks if the arm moved out of the limit switch
+      System.out.print("reach");
       RobotContainer.m_armLift.setArmLiftState(ArmLift.ArmLiftStates.INITIALIZED);
       finish = true;
+    }
+    else{
+      RobotContainer.m_armLift.movePos(-0.02);
     }
   }
 
