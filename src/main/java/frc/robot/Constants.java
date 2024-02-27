@@ -23,4 +23,6 @@ public final class Constants {
   public static final int outtakeButtonID = 2;
   public static final int neoMotorID = 3;
   public static final int sensorID = 0;
+  public static final int falconVelocityLimit = 0;
+  public static final int neoVelocityLimit = 0;
 }
