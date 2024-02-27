@@ -5,6 +5,7 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ArmLift;
 import frc.robot.subsystems.ArmLift.ArmLiftStates;
@@ -36,12 +37,11 @@ public class ResetPosition extends Command {
   @Override
   public void execute() {
     if(!(RobotContainer.m_armLift.getLimitSwitch())) { //Checks if the arm moved out of the limit switch
-      System.out.print("reach");
       RobotContainer.m_armLift.setArmLiftState(ArmLift.ArmLiftStates.INITIALIZED);
       finish = true;
     }
     else{
-      RobotContainer.m_armLift.movePos(-0.02);
+      RobotContainer.m_armLift.movePos(-0.03);
     }
   }
 

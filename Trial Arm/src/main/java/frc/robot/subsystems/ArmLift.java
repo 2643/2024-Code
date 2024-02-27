@@ -83,6 +83,10 @@ public class ArmLift extends SubsystemBase {
   GenericEntry targetPosEntry = Shuffleboard.getTab(  "PID").add("Target Position", 0).getEntry();
   GenericEntry PosErrEntry = Shuffleboard.getTab("PID").add("Pos Err", 0).getEntry();
 
+  // limit switch
+  
+   GenericEntry limitSwitchEntry = Shuffleboard.getTab("PID").add("Limit Switch", true).getEntry();
+
   // requests
   final MotionMagicVoltage m_position = new MotionMagicVoltage(0);
 
@@ -93,13 +97,13 @@ public class ArmLift extends SubsystemBase {
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
     var slot0Configs = talonFXConfigs.Slot0;    
 
-    slot0Configs.kP = 2.5; //Proportional
+    slot0Configs.kP = 3; //Proportional 2.5 seems good for actual robot
     slot0Configs.kI = 0; //Integral
     slot0Configs.kD = 0; //Derivative
     slot0Configs.kV = 0; //Velocity
     
-    motionMagicConfigs.MotionMagicAcceleration = 10; // Target acceleration 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 10; // Target velocity
+    motionMagicConfigs.MotionMagicAcceleration = 100; // Target acceleration 
+    motionMagicConfigs.MotionMagicCruiseVelocity = 70; // Target velocity
 
     leftarmMotor.getConfigurator().apply(talonFXConfigs);
 
@@ -120,7 +124,7 @@ public class ArmLift extends SubsystemBase {
   // }
 
   public void movePos(double pos) {
-    leftarmMotor.setControl(m_position.withPosition(pos));
+    leftarmMotor.setControl(m_position.withPosition(pos * Constants.gearRatio));
     leftarmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
     setTargetPos(pos);
   }
@@ -164,16 +168,16 @@ public class ArmLift extends SubsystemBase {
   }
 
   public static positionStates armPlacement(double ctrlValue) { //Checks the 
-    if (ctrlValue <= 0.05 && ctrlValue >= 0.02) 
-      return positionStates.SPEAKER;
-    else if (ctrlValue <= -0.33 && ctrlValue >= -0.36)
+    // if (ctrlValue <= 0.05 && ctrlValue >= 0) 
+    //   return positionStates.HOOK;
+    if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
       return positionStates.HOOK;
-    else if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
-      return positionStates.AMP;
-    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
-      return positionStates.FLOOR; 
-    else if (ctrlValue <= -0.26 && ctrlValue >= -0.29)
+    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
       return positionStates.REST;
+    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
+      return positionStates.AMP; 
+    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
+      return positionStates.SPEAKER;
     else
       return currentPos;
   }
@@ -205,12 +209,13 @@ public class ArmLift extends SubsystemBase {
   @Override
   public void periodic() {
 
-    AuxiliaryFF = 0.17 * Math.sin(Math.toRadians((getPos())));
+    AuxiliaryFF = 0.17 * Math.sin(Math.toRadians((getPos()+19.5243))); //19.5243 is the offset
     setFF(AuxiliaryFF);
 
     // System.out.println(limitSwitch.get()); Limit switch testing  
     // This method will be called once per scheduler run
 
+    limitSwitchEntry.setBoolean(getLimitSwitch());
     currentPosEntry.setDouble(getPos());
     PosErrEntry.setDouble(targetPosEntry.getDouble(0) - currentPosEntry.getDouble(0));
     // movePos(targetPosEntry.getDouble(0)); Ruins the positionState change
