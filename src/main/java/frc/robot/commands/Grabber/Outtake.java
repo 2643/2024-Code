@@ -11,7 +11,7 @@ import frc.robot.RobotContainer;
 public class Outtake extends Command {
   /** Creates a new Outtake. */
   boolean finish = false;
-  Timer time = new Timer();
+  // Timer time = new Timer();
   public Outtake() {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_Grabber);
@@ -21,22 +21,22 @@ public class Outtake extends Command {
   @Override
   public void initialize() {
     
-    time.start();
+    // time.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(time.get() > 1) {
-      finish = true;
-    }
+    // if(time.get() > 1) {
+    //   finish = true;
+    // }
     RobotContainer.m_Grabber.grabberOuttake(0.8, -0.4);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    time.reset();
+    // time.reset();
     RobotContainer.m_Grabber.stopGrabber();
   }
 

@@ -42,7 +42,7 @@ public class TeleopSwerve extends Command {
   static double encoderkI = 0.00;
   static double encoderkD = 0.005;
   static double ff = 0.005;
-  TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1000, 100);
+  TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(10000, 10000);
   ProfiledPIDController rotPid = new ProfiledPIDController(encoderkP, encoderkI, encoderkD, constraints);
 
   // Shuffleboard entries

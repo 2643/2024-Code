@@ -12,6 +12,6 @@ public class SpeakerRoutine extends SequentialCommandGroup {
     public SpeakerRoutine() {
 
         addCommands(new WaitCommand(.5),new ArmMove(positionStates.SPEAKER), new WristMove(WristpositionStates.SPEAKER), new WaitCommand(1),
-                    new Outtake(), new WaitCommand(1), new ArmMove(positionStates.REST), new WristMove(WristpositionStates.REST));
+                    new Outtake().withTimeout(1), new WaitCommand(1), new ArmMove(positionStates.REST), new WristMove(WristpositionStates.REST));
     }
 }
