@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Translation2d;
+// import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
@@ -19,7 +19,7 @@ public class AutoSwerve extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("here");
+    //System.out.println("here");
     RobotContainer.s_Swerve.drive(new ChassisSpeeds());
   }
 

@@ -5,7 +5,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
@@ -116,22 +116,24 @@ public class TeleopSwerve extends Command {
 
     // Attempts to zero the robot at startup and wait for a new angle to go to
 
-    if (initFlag) {
+    if (initFlag && !RobotContainer.turnSwitch.getAsBoolean()) {
       RobotContainer.s_Swerve.zeroHeading();
-      encoderOffset = RobotContainer.driver.getRawAxis(2);
+      encoderOffset = RobotContainer.operatorBoard.getRawAxis(3);
       initFlag = false;
     }
-    else if (rotationSup.getAsDouble() + 1 - encoderOffset < 0) {
-      System.out.println("im below 0");
+    else if (rotationSup.getAsDouble() + 1 - encoderOffset < 0 && !RobotContainer.turnSwitch.getAsBoolean()) {
+      //System.out.println("im below 0");
       betterEncoderAngle = (2 + rotationSup.getAsDouble() + 1 - encoderOffset) * 180;
     }
-    else if (rotationSup.getAsDouble() + 1 - encoderOffset > 2) {
-      System.out.println("im above 2");
+    else if (rotationSup.getAsDouble() + 1 - encoderOffset > 2 && !RobotContainer.turnSwitch.getAsBoolean()) {
+      //System.out.println("im above 2");
       betterEncoderAngle = (rotationSup.getAsDouble() + 1 - encoderOffset - 2) * 180;
     }
-    else
+    else if (!RobotContainer.turnSwitch.getAsBoolean())
       betterEncoderAngle = (rotationSup.getAsDouble() + 1 - encoderOffset) * 180;
-    //System.out.println(betterEncoderAngle);
+    betterEncoderAngle -= 180;
+    // System.out.println(betterEncoderAngle);
+    // System.out.println("encoder offset" + encoderOffset);
     // else {
     //   betterEncoderAngle = (rotationSup.getAsDouble() + 1) * 180;
     // }
@@ -157,6 +159,7 @@ public class TeleopSwerve extends Command {
     
     // Optimization; for example, if the robot is commanded to spin 190 degrees, it will instead spin 170 degrees in the other direction.
     // can cause bugs so comment out while testing
+    // dont use, rot pid already implements a sort of optimization
 
     // if(new_Var > 180){
     //   new_Var -= 180;

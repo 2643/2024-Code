@@ -23,7 +23,6 @@ import frc.robot.commands.Grabber.Outtake;
 import frc.robot.commands.Grabber.StopGrabber;
 import frc.robot.commands.WristCom.wristDownCom;
 import frc.robot.commands.WristCom.wristUpCom;
-import frc.robot.commands.autos.AmpRoutine;
 import frc.robot.commands.autos.SpeakerRoutine;
 import frc.robot.subsystems.ArmLift;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -74,13 +73,13 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   ComplexWidget ShuffleBoardAutonomousRoutines = Shuffleboard.getTab("Driver").add("Autonoumous Routines Selector", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 2).withPosition(0, 2);
   public final Command SpeakerRoutine = new SpeakerRoutine();
-  public final Command AmpRoutine = new AmpRoutine();
+  // public final Command AmpRoutine = new AmpRoutine();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    autoChooser.setDefaultOption("SPEAKER Routine", new AmpRoutine());
-    autoChooser.addOption("AMP Routine", new SpeakerRoutine());
+    autoChooser.setDefaultOption("SPEAKER Routine", new SpeakerRoutine());
+    
   }
  
   /**

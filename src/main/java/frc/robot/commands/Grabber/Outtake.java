@@ -37,6 +37,7 @@ public class Outtake extends Command {
   @Override
   public void end(boolean interrupted) {
     time.reset();
+    RobotContainer.m_Grabber.stopGrabber();
   }
 
   // Returns true when the command should end.

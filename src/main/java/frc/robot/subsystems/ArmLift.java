@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Timer;
+
 // import com.ctre.phoenix6.configs.MotionMagicConfigs;
 // import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -11,6 +13,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,7 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import java.util.Timer;
+import frc.robot.subsystems.Wrist.WristpositionStates;
 
 
 
@@ -92,8 +95,8 @@ public class ArmLift extends SubsystemBase {
 
   // state
 
-  GenericEntry armStateEntry = Shuffleboard.getTab("Game").add("Arm State", "0").getEntry();
-  GenericEntry stateEncoderEntry = Shuffleboard.getTab("Game").add("State Encoder", 0).getEntry();
+  GenericEntry armStateEntry = Shuffleboard.getTab("Game").add("Arm State", ArmLiftState.toString()).getEntry();
+  GenericEntry stateEncoderEntry = Shuffleboard.getTab("Game").add("State Encoder", positionState.toString()).getEntry();
 
   // limit switch
   
@@ -189,19 +192,16 @@ public class ArmLift extends SubsystemBase {
   public static positionStates armPlacement(double ctrlValue) { //Checks the 
     // if (ctrlValue <= 0.05 && ctrlValue >= 0) 
     //   return positionStates.HOOK;
-    if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
-      return positionStates.AMP;
-    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
-      return positionStates.REST;
-    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
-      return positionStates.SPEAKER; 
-    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
-      return positionStates.REST;
-    else if (ctrlValue == 1.00)
+   if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
       return positionStates.FLOOR;
+    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
+      return positionStates.AMP;
+    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
+      return positionStates.REST; 
+    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
+      return positionStates.SPEAKER;
     else
       return currentPos;
-    
       
   }
 

@@ -92,7 +92,7 @@ public class Wrist extends SubsystemBase {
 
   // states
 
-  GenericEntry wristStateEntry = Shuffleboard.getTab("Game").add("Wrist State", 0).getEntry();
+  GenericEntry wristStateEntry = Shuffleboard.getTab("Game").add("Wrist State",  WristState.toString()).getEntry();
 
   // limit switch
   
@@ -185,15 +185,13 @@ public class Wrist extends SubsystemBase {
   public static WristpositionStates armPlacement(double ctrlValue) {
 
     if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
-      return WristpositionStates.AMP;
-    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
-      return WristpositionStates.REST;
-    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
-      return WristpositionStates.SPEAKER; 
-    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
-      return WristpositionStates.REST;
-    else if (ctrlValue == 1.00)
       return WristpositionStates.FLOOR;
+    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
+      return WristpositionStates.AMP;
+    else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
+      return WristpositionStates.REST; 
+    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
+      return WristpositionStates.SPEAKER;
     else
       return currentPos;
   }
