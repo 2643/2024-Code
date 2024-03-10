@@ -30,6 +30,8 @@ public class Grabber extends SubsystemBase {
   ShuffleboardTab tab = Shuffleboard.getTab("Velocity");
   GenericEntry currentFalconEntry = tab.add("Falcon Velocity", curFalconVelocity).getEntry();
   GenericEntry currentNeoEntry = tab.add("Neo Velocity", curNeoVelocity).getEntry();
+  GenericEntry didWeIntake = Shuffleboard.getTab("Driver").add("Intake Limit Switch", false).getEntry();
+
   
   //TODO: VELOCITY LIMIT DOES NOT WORK
 
@@ -73,6 +75,7 @@ public class Grabber extends SubsystemBase {
       neoSpeed = 0;
     }
 
+    neoMotor.set(0.15);
     motor.setControl(new DutyCycleOut(falconSpeed));
     time.start();
     //neoMotor.set(-0.3);
@@ -91,6 +94,7 @@ public class Grabber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    didWeIntake.setBoolean(sensor.get());
     curFalconVelocity = motor.getVelocity().getValueAsDouble();
     curNeoVelocity = neoMotor.getEncoder().getVelocity();
     currentFalconEntry.setDouble(curFalconVelocity);
