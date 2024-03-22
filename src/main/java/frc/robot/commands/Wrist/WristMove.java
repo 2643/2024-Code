@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.WristCom;
+package frc.robot.commands.Wrist;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -10,14 +10,14 @@ import frc.robot.RobotContainer;
 // import frc.robot.subsystems.ArmLift;
 // import frc.robot.subsystems.Wrist.positionStates;
 import frc.robot.subsystems.Wrist;
-import frc.robot.subsystems.Wrist.WristpositionStates;
+import frc.robot.subsystems.Wrist.wristPositionStates;
 
 public class WristMove extends Command {
-  Wrist.WristpositionStates state;
+  Wrist.wristPositionStates state;
 
-  // Wrist.WristpositionStates dummy;
+  // Wrist.wristPositionStates dummy;
   /** Creates a new Wrist. */
-  public WristMove(Wrist.WristpositionStates state) {
+  public WristMove(Wrist.wristPositionStates state) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_wrist); // Used to add parameters to the subsystem
     this.state = state;
@@ -42,22 +42,25 @@ public class WristMove extends Command {
   public void end(boolean interrupted) {
     //System.out.println(state);
     // if(dummy!=state){
-    // dummy = Wrist.WristpositionStates.DUMMY;
+    // dummy = Wrist.wristPositionStates.DUMMY;
     // if (RobotContainer.m_wrist.getWristState() == Wrist.WristStates.INITIALIZED)
     // {
-
-    if (state == WristpositionStates.SPEAKER) {
+    
+    if (state == wristPositionStates.SPEAKER) {
       RobotContainer.m_wrist.movePos(Constants.SPEAKER_WRIST);
-    } else if (state == WristpositionStates.REST) {
+    } else if (state == wristPositionStates.REST) {
       RobotContainer.m_wrist.movePos(Constants.REST_WRIST);
-    } else if (state == WristpositionStates.AMP) {
+    } else if (state == wristPositionStates.AMP) {
       RobotContainer.m_wrist.movePos(Constants.AMP_WRIST);
-    } else if (state == WristpositionStates.FLOOR) {
+    } else if (state == wristPositionStates.FLOOR) {
       RobotContainer.m_wrist.movePos(Constants.FLOOR_WRIST);
+    }
+      else if (state == wristPositionStates.SNIPE) {
+        RobotContainer.m_wrist.movePos(Constants.SPEAKER_WRIST);
     }
 
   }
-  // RobotContainer.m_wrist.setWristPositionState(WristpositionStates.REST);
+  // RobotContainer.m_wrist.setWristPositionState(wristPositionStates.REST);
 
   // else if(state == Wrist.positionStates.FLOOR) {
   // RobotContainer.m_Wrist.movePos(Constants.FLOOR);

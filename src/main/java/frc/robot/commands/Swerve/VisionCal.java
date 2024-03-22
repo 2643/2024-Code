@@ -2,16 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.WristCom;
+package frc.robot.commands.Swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
 
-public class wristUpCom extends Command {
-  /** Creates a new wristUpCom. */
-  Boolean finish = false;
-  public wristUpCom() {
-    addRequirements(RobotContainer.m_wrist);
+public class VisionCal extends Command {
+  /** Creates a new VisionCAl. */
+  public VisionCal() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -19,16 +16,11 @@ public class wristUpCom extends Command {
   @Override
   public void initialize() {
     
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    // if(RobotContainer.m_wrist.getPos() <= 0){
-    RobotContainer.m_wrist.movePos(RobotContainer.m_wrist.returnTargetPos()  + 0.01);
-    finish = true;}
-  // }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -37,6 +29,6 @@ public class wristUpCom extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return finish;
+    return false;
   }
 }

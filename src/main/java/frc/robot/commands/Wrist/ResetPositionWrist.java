@@ -2,22 +2,22 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.WristCom;
+package frc.robot.commands.Wrist;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.Wrist.WristStates;
-import frc.robot.subsystems.Wrist.WristpositionStates;
+import frc.robot.subsystems.Wrist.wristPositionStates;
 
-public class ResetpositionWrist extends Command {
+public class ResetPositionWrist extends Command {
   boolean finish = false;
   boolean flag = false;
   boolean notInInit = false;
   static double faketarget = 0;
 
   /** Creates a new ResetPosition. */
-  public ResetpositionWrist() {
+  public ResetPositionWrist() {
     addRequirements(RobotContainer.m_wrist);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -53,12 +53,12 @@ public class ResetpositionWrist extends Command {
       if (!(RobotContainer.m_wrist.getLimitSwitch()) && !flag) { // Checks if the arm moved out of the limit
         // switch
         RobotContainer.m_wrist.setPos(0);
-        //System.out.println("swiched states");
+        //System.out.println("switched states");
         RobotContainer.m_wrist.setWristState(Wrist.WristStates.INITIALIZED);
         //System.out.println("end");
         //System.out.println(RobotContainer.m_wrist.getWristState());
         RobotContainer.m_wrist.setWristState(Wrist.WristStates.INITIALIZED);
-        RobotContainer.m_wrist.setWristPositionState(WristpositionStates.REST);
+        RobotContainer.m_wrist.setWristPositionState(wristPositionStates.REST);
         // Makes sure that the arm is at zero
         RobotContainer.m_wrist.movePos(0);
         finish = true;

@@ -7,8 +7,8 @@ package frc.robot.commands.Arm;
 import edu.wpi.first.wpilibj2.command.Command;
 // import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.ArmLift;
-import frc.robot.subsystems.ArmLift.ArmLiftStates;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmLiftStates;
 
 public class ResetPositionArm extends Command {
   boolean finish = false;
@@ -37,7 +37,7 @@ public class ResetPositionArm extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.m_armLift.setArmLiftPositionState(ArmLift.positionStates.REST);
+    RobotContainer.m_armLift.setArmLiftPositionState(Arm.armPositionStates.REST);
     if (!(RobotContainer.m_armLift.getLimitSwitch())) { // Checks if the arm moved out of the limit switch
       RobotContainer.m_armLift.setArmLiftState(ArmLiftStates.INITIALIZED);
       RobotContainer.m_armLift.setPos(0); // Makes sure that the arm is at zero

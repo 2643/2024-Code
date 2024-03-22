@@ -7,17 +7,20 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.TeleopSwerve;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.Arm.ArmMove;
 import frc.robot.commands.Arm.ResetPositionArm;
-import frc.robot.commands.WristCom.ResetpositionWrist;
-import frc.robot.commands.WristCom.WristMove;
-import frc.robot.subsystems.ArmLift;
-import frc.robot.subsystems.ArmLift.ArmLiftStates;
-import frc.robot.subsystems.ArmLift.positionStates;
+//import frc.robot.commands.Grabber.Outtake;
+import frc.robot.commands.Swerve.AutoSwerve;
+import frc.robot.commands.Swerve.TeleopSwerve;
+import frc.robot.commands.Wrist.ResetPositionWrist;
+import frc.robot.commands.Wrist.WristMove;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmLiftStates;
+import frc.robot.subsystems.Arm.armPositionStates;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.Wrist.WristStates;
-import frc.robot.subsystems.Wrist.WristpositionStates;
+import frc.robot.subsystems.Wrist.wristPositionStates;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,10 +39,12 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private positionStates isCurrentPos = positionStates.REST;
+  private armPositionStates isCurrentPos = armPositionStates.REST;
 
-  private WristpositionStates isCurrentWristPos = WristpositionStates.REST;
-  // private WristpositionStates isCurrentEncoderPos;
+  private wristPositionStates isCurrentWristPos = wristPositionStates.REST;
+
+  // private boolean hazNote;
+  // private wristPositionStates isCurrentEncoderPos;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -102,6 +107,7 @@ public class Robot extends TimedRobot {
     // }
 
     // CommandScheduler.getInstance().schedule(new ResetPosition());
+    CommandScheduler.getInstance().schedule(new AutoSwerve());
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -124,7 +130,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     // MYSTERY ACTOR HERE
     // isCurrentEncoderPos = Wrist.WristgetPositionState();
-    isCurrentPos = ArmLift.getPositionState();
+    isCurrentPos = Arm.getPositionState();
     CommandScheduler.getInstance().setDefaultCommand(RobotContainer.s_Swerve, new TeleopSwerve());
 
     if (m_autonomousCommand != null) {
@@ -136,16 +142,23 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if (isCurrentPos != ArmLift.getPositionState()
+    // if (RobotContainer.autoAngleButton.getAsBoolean()) {
+    //   CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new ArmMove(armPositionStates.SNIPE), new WristMove(wristPositionStates.SNIPE)));
+    // }
+    
+    
+    if (isCurrentPos != Arm.getPositionState()
         && RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZED
-        && RobotContainer.m_wrist.getWristState() == WristStates.INITIALIZED) {
-      isCurrentPos = ArmLift.getPositionState();
+        && RobotContainer.m_wrist.getWristState() == WristStates.INITIALIZED
+        && !RobotContainer.autoAngleButton.getAsBoolean()) {
+      isCurrentPos = Arm.getPositionState();
       CommandScheduler.getInstance().schedule(new ArmMove(isCurrentPos));
     }
 
     if (isCurrentWristPos != Wrist.WristgetPositionState()
         && RobotContainer.m_wrist.getWristState() == WristStates.INITIALIZED
-        && RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZED) {
+        && RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZED
+        && !RobotContainer.autoAngleButton.getAsBoolean()) {
       isCurrentWristPos = Wrist.WristgetPositionState();
       CommandScheduler.getInstance().schedule(new WristMove(isCurrentWristPos));
     }
@@ -154,9 +167,19 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(new ResetPositionArm());
     }
     if (RobotContainer.m_wrist.getWristState() == WristStates.NOT_INITIALIZED) {
-      CommandScheduler.getInstance().schedule(new ResetpositionWrist());
-
+      CommandScheduler.getInstance().schedule(new ResetPositionWrist());
     }
+
+    if (RobotContainer.autoAngleButton.getAsBoolean() && RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZED && RobotContainer.m_wrist.getWristState() == WristStates.INITIALIZED) //{
+      CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new ArmMove(armPositionStates.SNIPE), new WristMove(wristPositionStates.SNIPE)));
+    //   if (RobotContainer.m_Grabber.getLimitSwitch()) {
+    //     hazNote = true;
+    //   }
+    //   if (RobotContainer.m_vision.getError() < 2 && hazNote && RobotContainer.m_vision.getError() != 0) {
+    //     hazNote = false;
+    //     CommandScheduler.getInstance().schedule(new Outtake());
+    //   }
+    // }
   }
 
   @Override

@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,27 +22,24 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Wrist.WristpositionStates;
 
-
-
-
-public class ArmLift extends SubsystemBase {
+public class Arm extends SubsystemBase {
 
   Timer time;
 
-  public static enum moveJoystick { //States to check wwhat direction the joystick is moving
+  public static enum moveJoystick { //States to check what direction the joystick is moving
     Up,
     Down
   }
 
-  public static enum positionStates { //Different position states for the arm to move
+  public static enum armPositionStates { //Different position states for the arm to move
     FLOOR,
     AMP,
     HOOK,
     SPEAKER,
     REST,
-    DUMMY
+    DUMMY,
+    SNIPE
   }
 
   public static enum ArmLiftStates { //Different states that determines what stage the arm is in.
@@ -55,8 +53,9 @@ public class ArmLift extends SubsystemBase {
 
   // motors
 
-  TalonFX leftarmMotor = new TalonFX(Constants.leftmotorPort);
-  TalonFX rightarmMotor = new TalonFX(Constants.rightmotorPort);
+  TalonFX leftArmMotor = new TalonFX(Constants.leftmotorPort);
+  TalonFX rightArmMotor = new TalonFX(Constants.rightmotorPort);
+
 
 
   // limit switches
@@ -73,9 +72,9 @@ public class ArmLift extends SubsystemBase {
 
   double currentArmEncoderPos;
   double AuxiliaryFF;
-  static positionStates currentPos = positionStates.REST;
+  static armPositionStates currentPos = armPositionStates.REST;
   ArmLiftStates ArmLiftState = ArmLiftStates.INITIALIZING;
-  static positionStates positionState = positionStates.REST;
+  static armPositionStates positionState = armPositionStates.REST;
 
   // PID
   // GenericEntry pEntry = Shuffleboard.getTab("ARM").add("Arm Proportional", 0).getEntry();
@@ -105,7 +104,7 @@ public class ArmLift extends SubsystemBase {
   // requests
   final MotionMagicVoltage m_position = new MotionMagicVoltage(0);
 
-  public ArmLift() {
+  public Arm() {
 
     //PID/Velocity configurations make sure that the motionMagic and slot0 configs are under var!
     TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
@@ -120,27 +119,32 @@ public class ArmLift extends SubsystemBase {
     motionMagicConfigs.MotionMagicAcceleration = 100; // Target acceleration 
     motionMagicConfigs.MotionMagicCruiseVelocity = 70; // Target velocity
 
-    leftarmMotor.getConfigurator().apply(talonFXConfigs);
+    leftArmMotor.getConfigurator().apply(talonFXConfigs);
 
 
-    rightarmMotor.setControl(new Follower(Constants.leftmotorPort, true)); //Follower master the rightarmMotor is reversed b/c double linked arm
+    //rightArmMotor.setControl(new Follower(Constants.leftmotorPort, true)); //Follower master the rightArmMotor is reversed b/c double linked arm
+    Follower rightFollower = new Follower(Constants.leftmotorPort, true);
+    rightFollower.withUpdateFreqHz(20);
+    rightArmMotor.setControl(rightFollower);
+    leftArmMotor.setNeutralMode(NeutralModeValue.Brake);
+    rightArmMotor.setNeutralMode(NeutralModeValue.Brake);
   }
 
   public double getPos() {
-    return leftarmMotor.getPosition().getValueAsDouble();
+    return leftArmMotor.getPosition().getValueAsDouble();
   }
 
   public void setPos(double pos) {
-    leftarmMotor.setPosition(pos);
+    leftArmMotor.setPosition(pos);
   }
 
   // public void setSpeed(double speed) { Doesn't work
-  //   leftarmMotor.set(speed);
+  //   leftArmMotor.set(speed);
   // }
 
   public void movePos(double pos) {
-    leftarmMotor.setControl(m_position.withPosition(pos * Constants.gearRatioArm));
-    //leftarmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
+    leftArmMotor.setControl(m_position.withPosition(pos * Constants.gearRatioArm));
+    //leftArmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
     targetPos = pos;
     targetPosEntry.setDouble(targetPos);
     
@@ -162,16 +166,16 @@ public class ArmLift extends SubsystemBase {
   }
 
   // public void setVelocity(double val) { Doesn't work
-  //   leftarmMotor.setControl(m_velocity.withVelocity(val));
+  //   leftArmMotor.setControl(m_velocity.withVelocity(val));
     // var motionMagicConfigs = new MotionMagicConfigs();
     // motionMagicConfigs.MotionMagicCruiseVelocity = val;
-    // leftarmMotor.getConfigurator().apply(motionMagicConfigs);
+    // leftArmMotor.getConfigurator().apply(motionMagicConfigs);
   // }
 
   // public void setAcceleration(double val) { Doesn't work
   //   var motionMagicConfigs = new MotionMagicConfigs();
   //   motionMagicConfigs.MotionMagicAcceleration = val;
-  //   leftarmMotor.getConfigurator().apply(motionMagicConfigs);
+  //   leftArmMotor.getConfigurator().apply(motionMagicConfigs);
   // }
 
   // public double getVelocity() {
@@ -186,26 +190,27 @@ public class ArmLift extends SubsystemBase {
   //   return accelEntry.getDouble(0);
   // }
 
-  public void setArmLiftPositionState(positionStates state) {
+  public void setArmLiftPositionState(armPositionStates state) {
     positionState = state;
   }
-  public static positionStates armPlacement(double ctrlValue) { //Checks the 
+  public static armPositionStates armPlacement(double ctrlValue) { //Checks the guh??!!??!
     // if (ctrlValue <= 0.05 && ctrlValue >= 0) 
-    //   return positionStates.HOOK;
+    //   return armPositionStates.HOOK; what hook
    if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
-      return positionStates.FLOOR;
+      return armPositionStates.FLOOR;
     else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
-      return positionStates.AMP;
+      return armPositionStates.AMP;
     else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
-      return positionStates.REST; 
-    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
-      return positionStates.SPEAKER;
+      return armPositionStates.REST; 
+    else if (ctrlValue <= -0.27 && ctrlValue >= -0.29){
+      return armPositionStates.SPEAKER;
+    }
     else
       return currentPos;
       
   }
 
-  public static positionStates getPositionState() {
+  public static armPositionStates getPositionState() {
     return currentPos;
   }
 
@@ -218,11 +223,11 @@ public class ArmLift extends SubsystemBase {
   }
 
   public void runMotor() {
-    leftarmMotor.setControl(new DutyCycleOut(0.0));
+    leftArmMotor.setControl(new DutyCycleOut(0.0));
   }
 
   public void disableMotor() {
-    leftarmMotor.disable();
+    leftArmMotor.disable();
   }
 
   public void setFF(double val) {
@@ -235,13 +240,12 @@ public class ArmLift extends SubsystemBase {
 
     armWristAngle = 180 - armAngle - Wrist.wristAngle;
 
-    effectiveArmLength = Math.sqrt(Math.pow(Constants.armLength, 2) + Math.pow(Constants.wristLength, 2)
-        - 2 * Constants.armLength * Constants.wristLength * Math.cos(armWristAngle));
+    effectiveArmLength = Math.sqrt(Math.pow(Constants.armLength, 2) + Math.pow(Constants.wristLength, 2) - 2 * Constants.armLength * Constants.wristLength * Math.cos(armWristAngle));
     armOffsetAngle = Math.sin(Math.sin(Math.toRadians(armWristAngle) * Constants.wristLength / Constants.armLength));
     effectiveArmMass = 0.17 * (Constants.armLength + Constants.wristLength);
 
     AuxiliaryFF = effectiveArmLength * effectiveArmMass * Math.sin(Math.toRadians(armAngle + armOffsetAngle));// *9.81
-    leftarmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
+    leftArmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
 
     FFEntry.setDouble(AuxiliaryFF);
 

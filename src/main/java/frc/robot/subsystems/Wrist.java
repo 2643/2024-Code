@@ -28,18 +28,19 @@ public class Wrist extends SubsystemBase {
 
   Timer time;
 
-  public static enum moveJoystick { //States to check wwhat direction the joystick is moving
+  public static enum moveJoystick { //States to check what direction the joystick is moving
     Up,
     Down
   }
 
-  public static enum WristpositionStates { //Different position states for the arm to move
+  public static enum wristPositionStates { //Different position states for the arm to move
     FLOOR,
     AMP,
     HOOK,
     SPEAKER,
     REST,
-    DUMMY
+    DUMMY,
+    SNIPE
   }
 
   public static enum WristStates { //Different states that determines what stage the arm is in.
@@ -68,15 +69,15 @@ public class Wrist extends SubsystemBase {
   static double wristAngle;
 
 
-  static double targetPostion = 0;
-  static WristpositionStates currentPos = WristpositionStates.REST;
+  static double targetPosition = 0;
+  static wristPositionStates currentPos = wristPositionStates.REST;
   WristStates WristState = WristStates.NOT_INITIALIZED;
-  static WristpositionStates positionState = WristpositionStates.REST;
+  static wristPositionStates positionState = wristPositionStates.REST;
 
   // PID
-  // GenericEntry pWEntry = Shuffleboard.getTab("WRIST").add("Proportional Wrist", 0).getEntry();
-  // GenericEntry iWEntry = Shuffleboard.getTab("WRIST").add("Integral Wrist", 0).getEntry();
-  // GenericEntry dWEntry = Shuffleboard.getTab("WRIST").add("Derivative Wrist",0).getEntry();
+  GenericEntry pWEntry = Shuffleboard.getTab("WRIST").add("Proportional Wrist", 0).getEntry();
+  GenericEntry iWEntry = Shuffleboard.getTab("WRIST").add("Integral Wrist", 0).getEntry();
+  GenericEntry dWEntry = Shuffleboard.getTab("WRIST").add("Derivative Wrist",0).getEntry();
   GenericEntry FFWEntry = Shuffleboard.getTab("WRIST").add("Feed Forward Wrist",0).getEntry();
   GenericEntry WAngleEntry = Shuffleboard.getTab("WRIST").add("Wrist Angle",0).getEntry();
 
@@ -112,17 +113,17 @@ public class Wrist extends SubsystemBase {
     
     //tune PID and also tune configurations
 
-    slot0Configs.kP = 30; 
+    slot0Configs.kP = 30; //30
     slot0Configs.kI = 0; 
     slot0Configs.kD = 0; 
 
     slot0Configs.kV = 0; 
     
-    motionMagicConfigs.MotionMagicAcceleration = 50; 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 55; 
+    motionMagicConfigs.MotionMagicAcceleration = 80; 
+    motionMagicConfigs.MotionMagicCruiseVelocity = 85; 
 
     wristMotor.getConfigurator().apply(talonFXConfigs);
-    // targetPostion=0;
+    // targetPosition=0;
     // wristMotor.setPosition(0);
     // wristMotor.setControl(m_position.withPosition(0));
   }
@@ -135,25 +136,27 @@ public class Wrist extends SubsystemBase {
     wristMotor.setPosition(pos);
   }
 
-  public void changeP(double KP){
-    TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
-    var slot0Configs = talonFXConfigs.Slot0;
-    slot0Configs.kP = KP; 
-  }
+  // public void changePID (double KP, double KI, double KD){
+  //   TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
+  //   var slot0Configs = talonFXConfigs.Slot0;
+  //   slot0Configs.kP = KP; 
+  //   slot0Configs.kI = KI; 
+  //   slot0Configs.kD = KD; 
+  // }
 
   public void movePos(double pos) {
     wristMotor.setControl(m_position.withPosition(pos * Constants.gearRatioWrist));
     //wristMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
-    targetPostion = pos;
-    setTargetPos(targetPostion);
-    targetPosWEntry.setDouble(targetPostion);
+    targetPosition = pos;
+    setTargetPos(targetPosition);
+    targetPosWEntry.setDouble(targetPosition);
   }
 
   public void setWristState(WristStates state) {
     WristState = state; 
   }
 
-  public void setWristPositionState(WristpositionStates state) {
+  public void setWristPositionState(wristPositionStates state) {
     positionState = state;
   }
 
@@ -167,7 +170,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public double returnTargetPos() {
-    return targetPostion;
+    return targetPosition;
   }
 
   // public double getVelocity() {
@@ -182,21 +185,21 @@ public class Wrist extends SubsystemBase {
   //   return accelEntry.getDouble(0);
   // }
 
-  public static WristpositionStates armPlacement(double ctrlValue) {
+  public static wristPositionStates armPlacement(double ctrlValue) {
 
     if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
-      return WristpositionStates.FLOOR;
+      return wristPositionStates.FLOOR;
     else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
-      return WristpositionStates.AMP;
+      return wristPositionStates.AMP;
     else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
-      return WristpositionStates.REST; 
+      return wristPositionStates.REST; 
     else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)
-      return WristpositionStates.SPEAKER;
+      return wristPositionStates.SPEAKER;
     else
       return currentPos;
   }
 
-  public static WristpositionStates WristgetPositionState() {
+  public static wristPositionStates WristgetPositionState() {
     return currentPos;
   }
 
@@ -205,7 +208,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public void setTargetPos(double pos) {
-    targetPostion = pos;
+    targetPosition = pos;
   }
 
   public void runMotor() {
@@ -225,18 +228,16 @@ public class Wrist extends SubsystemBase {
     //System.out.println("WRIST"+ getWristState());
     //change the feed forward to correspond the wrist formula
     wristAngle = -34 + ((getPos()*360/Constants.gearRatioWrist) - (RobotContainer.m_armLift.getPos()*360/Constants.gearRatioArm)); //try removing gear ratios
-    AuxiliaryFF = -0.128 * Math.sin(Math.toRadians(wristAngle)); 
+    AuxiliaryFF = -0.15 * Math.sin(Math.toRadians(wristAngle)); //-0.128 
     wristMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
-
-
     
     //System.out.println(WristgetPositionState());
     FFWEntry.setDouble(AuxiliaryFF);
     WAngleEntry.setDouble(wristAngle);
     limitSwitchWEntry.setBoolean(getLimitSwitch());
-    currentPosWEntry.setDouble(getPos());
+    currentPosWEntry.setDouble(getPos()/72.0167590726);
     PosErrWEntry.setDouble(targetPosWEntry.getDouble(0) - currentPosWEntry.getDouble(0));
-    targetPosWEntry.setDouble(targetPostion*Constants.gearRatioWrist);
+    //targetPosWEntry.setDouble(targetPosition*Constants.gearRatioWrist);
 
     wristStateEntry.setString(WristState.toString());
 

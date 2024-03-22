@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Swerve;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -30,6 +30,8 @@ public class TeleopSwerve extends Command {
 
   // flag used for sync
   double encoderOffset;
+
+  double dummy;
 
   // Double suppliers for the movement values for swerve
   static private DoubleSupplier translationSup;
@@ -100,12 +102,12 @@ public class TeleopSwerve extends Command {
 
     // Shuffleboard entries for encoder
 
-    // Switches modes between joystick/encoder rotational control TODO: change this to swap between flight controller and xbox
+    // Switches modes between joystick/encoder rotational control maybe change this to swap between flight controller and xbox
 
     if (!RobotContainer.turnSwitch.getAsBoolean()) {
       rotationSup = () -> RobotContainer.operatorBoard.getRawAxis(3);
     } else {
-      rotationSup = () -> RobotContainer.driver.getRawAxis(2);
+      rotationSup = () -> -RobotContainer.driver.getRawAxis(2);
     }
 
     // Initializes movement suppliers to controller axis
@@ -114,7 +116,7 @@ public class TeleopSwerve extends Command {
     strafeSup = () -> -RobotContainer.driver.getRawAxis(0);
     robotCentricSup = () -> RobotContainer.robotCentric.getAsBoolean();
 
-    // Attempts to zero the robot at startup and wait for a new angle to go to
+    // zeroes the robot and encoder on startup
 
     if (initFlag && !RobotContainer.turnSwitch.getAsBoolean()) {
       RobotContainer.s_Swerve.zeroHeading();
@@ -155,11 +157,11 @@ public class TeleopSwerve extends Command {
 
     // Calculate the difference between the encoder angle and the gyro angle
 
-    double new_Var = ((RobotContainer.s_Swerve.getGyroYaw().getDegrees()) - betterEncoderAngle);
+    // double new_Var = ((RobotContainer.s_Swerve.getGyroYaw().getDegrees()) - betterEncoderAngle);
     
     // Optimization; for example, if the robot is commanded to spin 190 degrees, it will instead spin 170 degrees in the other direction.
     // can cause bugs so comment out while testing
-    // dont use, rot pid already implements a sort of optimization
+    // don't use, rot pid already implements a sort of optimization
 
     // if(new_Var > 180){
     //   new_Var -= 180;
@@ -175,18 +177,21 @@ public class TeleopSwerve extends Command {
 
     // Check what control to use based on switch (whether joystick or encoder rotation)
 
-    if (!RobotContainer.turnSwitch.getAsBoolean() && RobotContainer.operatorBoard.isConnected()) {
+    if (!RobotContainer.turnSwitch.getAsBoolean() && RobotContainer.operatorBoard.isConnected() && !RobotContainer.autoAngleButton.getAsBoolean()) {
       rotationVal = rotPid.calculate((RobotContainer.s_Swerve.getGyroYaw().getDegrees()), betterEncoderAngle); // m_feedforward.calculate(rotPid.getSetpoint().velocity, rotationVal, rotationVal, rotationVal, rotationVal);
-      rotationVal += (-ffEntry.getDouble(ff) /* new_Var*/);  
+      //rotationVal += -ff /* new_Var*/;  
     }
-    else {
+    else if (!RobotContainer.turnSwitch.getAsBoolean() && RobotContainer.operatorBoard.isConnected() && RobotContainer.autoAngleButton.getAsBoolean() /*&& !((int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() <= RobotContainer.m_vision.autoAngle() + 5 && (int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() >= RobotContainer.m_vision.autoAngle() - 5)*/) {
+      rotationVal = RobotContainer.m_vision.autoAngle() * Constants.Swerve.maxAngularVelocity;
+    }
+    else if (!RobotContainer.autoAngleButton.getAsBoolean() && !RobotContainer.turnSwitch.getAsBoolean()) {
       rotationVal = squareAxis(logAxis(rotationVal), Constants.stickRotationDeadband) * Constants.Swerve.maxAngularVelocity / 4;
     }
 
     // Updating shuffleboard entries for rotation values
 
     rotValEntry.setDouble(rotationVal);
-    diffValEntry.setDouble(new_Var);
+    // diffValEntry.setDouble(new_Var);
 
     // Calling drive method in subsystem to move robot
 

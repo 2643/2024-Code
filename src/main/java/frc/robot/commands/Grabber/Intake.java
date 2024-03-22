@@ -20,13 +20,11 @@ public class Intake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     RobotContainer.m_Grabber.grabberIntake(-0.3, 0.5);
   }
 

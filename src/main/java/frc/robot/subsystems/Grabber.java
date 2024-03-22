@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -24,19 +23,23 @@ public class Grabber extends SubsystemBase {
   CANSparkMax neoMotor = new CANSparkMax(Constants.neoMotorID, CANSparkLowLevel.MotorType.kBrushless);
   DigitalInput sensor = new DigitalInput(Constants.sensorID);
   Timer time = new Timer();
-  Timer time1 = new Timer();
+  Timer timeOuttake = new Timer();
   double curFalconVelocity;
   double curNeoVelocity;
   ShuffleboardTab tab = Shuffleboard.getTab("Velocity");
   GenericEntry currentFalconEntry = tab.add("Falcon Velocity", curFalconVelocity).getEntry();
   GenericEntry currentNeoEntry = tab.add("Neo Velocity", curNeoVelocity).getEntry();
   GenericEntry didWeIntake = Shuffleboard.getTab("Driver").add("Intake Limit Switch", false).getEntry();
+  boolean isActive = false;
+  Timer timeOut = new Timer();
+  double neoSpeed;
 
   
-  //TODO: VELOCITY LIMIT DOES NOT WORK
+  //TODO: VELOCITY LIMIT DOES NOT WORK, but it works so who really cares
 
   public Grabber() {
-    motor.setControl(new PositionDutyCycle(100));
+    // ... why is this here?
+    // motor.setControl(new PositionDutyCycle(100));
   }
 
   public void grabberIntake(double falconSpeed, double neoSpeed) {
@@ -46,19 +49,19 @@ public class Grabber extends SubsystemBase {
     //   falconSpeed = 0;
     //   neoSpeed = 0;
     // }
-
-    if(sensor.get()) {
+    
+    if(sensor.get() && Arm.getPositionState() == Arm.armPositionStates.FLOOR) {
       falconSpeed = 0;
       time.start();
       if(time.get() > 0.125) {
         neoSpeed = 0;
         neoMotor.setIdleMode(IdleMode.kBrake);
       }
-    }
-
+  }
     motor.setControl(new DutyCycleOut(falconSpeed));
     neoMotor.set(neoSpeed);
   }
+  
 
   public void grabberOuttake(double falconSpeed, double neoSpeed) {
     // limit velocity
@@ -69,31 +72,46 @@ public class Grabber extends SubsystemBase {
     // }
 
     // limit time
-    time1.start();
-    if(time1.get() > 5) {
-      falconSpeed = 0;
-      neoSpeed = 0;
-    }
-
-    neoMotor.set(0.15);
-    motor.setControl(new DutyCycleOut(falconSpeed));
-    time.start();
-    //neoMotor.set(-0.3);
-    if(time.get() > 0.5) {
-      neoMotor.set(neoSpeed);
+    // time1.start();
+    // System.out.println("start");
+    // if(time1.get() > 5) {
+    //   stopGrabber();
+    // }
+    this.neoSpeed = neoSpeed;
+    if (!isActive) {
+      timeOut.start();
+      isActive = true;
+      neoMotor.set(0.15);
+      motor.setControl(new DutyCycleOut(falconSpeed));
+      timeOuttake.start();
     }
   }
 
   public void stopGrabber() {
     motor.setControl(new DutyCycleOut(0));
     neoMotor.set(0);
+    time.stop();
     time.reset();
-    time1.reset();
+  }
+
+  public boolean getLimitSwitch() {
+    return sensor.get();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (timeOut.get() > 1.35) {
+      timeOut.stop();
+      timeOut.reset();
+      stopGrabber();
+      isActive = false;
+    }
+    if(timeOuttake.get() > 0.85) {
+      neoMotor.set(neoSpeed);
+      timeOuttake.stop();
+      timeOuttake.reset();
+    }
     didWeIntake.setBoolean(sensor.get());
     curFalconVelocity = motor.getVelocity().getValueAsDouble();
     curNeoVelocity = neoMotor.getEncoder().getVelocity();

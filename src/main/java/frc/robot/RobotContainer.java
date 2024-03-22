@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
@@ -14,21 +17,23 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.Arm.armDownCom;
-import frc.robot.commands.Arm.armUpCom;
+import frc.robot.commands.Arm.ArmMove;
+import frc.robot.commands.Autos.*;
+import frc.robot.commands.Arm.ArmStepDown;
+import frc.robot.commands.Arm.ArmStepUp;
 import frc.robot.commands.Grabber.Intake;
 import frc.robot.commands.Grabber.Outtake;
 import frc.robot.commands.Grabber.StopGrabber;
-import frc.robot.commands.WristCom.wristDownCom;
-import frc.robot.commands.WristCom.wristUpCom;
-import frc.robot.commands.autos.SpeakerRoutine;
-import frc.robot.subsystems.ArmLift;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.Wrist.WristMove;
+import frc.robot.commands.Wrist.WristStepDown;
+import frc.robot.commands.Wrist.WristStepUp;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.Arm.armPositionStates;
+import frc.robot.subsystems.Wrist.wristPositionStates;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,12 +49,11 @@ public class RobotContainer {
   public  JoystickButton zeroGyro = new JoystickButton(driver, 1);
   public static JoystickButton robotCentric = new JoystickButton(driver, 2);
 
-  public static ArmLift m_armLift = new ArmLift();
+  public static Arm m_armLift = new Arm();
   public static Wrist m_wrist = new Wrist();
+  public static Vision m_vision = new Vision();
 
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
   // public static final Joystick test = new Joystick(0);
   public static final Joystick operatorBoard = new Joystick(0);
   public static JoystickButton wristUp = new JoystickButton(operatorBoard, 8);
@@ -61,6 +65,8 @@ public class RobotContainer {
   public JoystickButton intakeButton = new JoystickButton(operatorBoard, Constants.intakeButtonID);
   public JoystickButton outtakeButton = new JoystickButton(operatorBoard, Constants.outtakeButtonID);
   public static JoystickButton turnSwitch = new JoystickButton(operatorBoard, 15);
+  public static JoystickButton autoAngleButton = new JoystickButton(operatorBoard, 11);
+  public static JoystickButton snipeButton = new JoystickButton(operatorBoard, 4);
 
   public static Swerve s_Swerve = new Swerve();
 
@@ -68,17 +74,33 @@ public class RobotContainer {
   // private final JoystickButton second = new JoystickButton(test, 2);  
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  // private final CommandXboxController m_driverController =
+  //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-  ComplexWidget ShuffleBoardAutonomousRoutines = Shuffleboard.getTab("Driver").add("Autonoumous Routines Selector", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 2).withPosition(0, 2);
+  ComplexWidget ShuffleBoardAutonomousRoutines = Shuffleboard.getTab("Driver").add("Autonomous Routines Selector", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 2).withPosition(0, 2);
   public final Command SpeakerRoutine = new SpeakerRoutine();
+
   // public final Command AmpRoutine = new AmpRoutine();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    NamedCommands.registerCommand("Reset", new ResetArmAndWrist());
+    NamedCommands.registerCommand("Floor", new FloorPosRoutine());
+    NamedCommands.registerCommand("AmpWrist", new WristMove(wristPositionStates.SPEAKER));
+    NamedCommands.registerCommand("AmpArm", new ArmMove(armPositionStates.SPEAKER));
+    NamedCommands.registerCommand("Outtake", new Outtake().withTimeout(1));
+    NamedCommands.registerCommand("RestWrist", new WristMove(wristPositionStates.REST));
+    NamedCommands.registerCommand("RestArm", new ArmMove(armPositionStates.REST));
+    NamedCommands.registerCommand("StopGrab", new StopGrabber());
+    NamedCommands.registerCommand("Intake", new Intake());
+    NamedCommands.registerCommand("Speaker", new SpeakerPosRoutine());
+    NamedCommands.registerCommand("Rest", new RestPosRoutine());
+    NamedCommands.registerCommand("Amp", new AmpPosRoutine());
+    NamedCommands.registerCommand("Snipe", new SnipePosRoutine().withTimeout(1.3));
+    //NamedCommands.registerCommand("Thing", new FloorRoutine());
     // Configure the trigger bindings
     configureBindings();
     autoChooser.setDefaultOption("SPEAKER Routine", new SpeakerRoutine());
+    autoChooser.addOption("New Auto", new PathPlannerAuto("intake"));
     
   }
  
@@ -94,38 +116,40 @@ public class RobotContainer {
   private void configureBindings() {
     zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
-    wristDown.onTrue(new wristDownCom());
-    wristUp.onTrue(new wristUpCom());
+    wristDown.onTrue(new WristStepDown());
+    wristUp.onTrue(new WristStepUp());
 
-    armUp.onTrue(new armUpCom());
-    armDown.onTrue(new armDownCom());
-    //ArmStick.onTrue(new ArmMove(positionStates.SPEAKER));
+    armUp.onTrue(new ArmStepUp());
+    armDown.onTrue(new ArmStepDown());
+    //ArmStick.onTrue(new ArmMove(armPositionStates.SPEAKER));
     // first.onTrue(new first());
     // second.onTrue(new second());
 
     intakeButton.onTrue(new Intake());
     outtakeButton.onTrue(new Outtake());
+    snipeButton.onTrue(new SnipePosRoutine());
 
     intakeButton.onFalse(new StopGrabber());
-    outtakeButton.onFalse(new StopGrabber());
+    // outtakeButton.onFalse(new StopGrabber());
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    // new Trigger(m_exampleSubsystem::exampleCondition)
+    //     .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
+   * 
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
 
     // An example command will be run in autonomous
-    return autoChooser.getSelected();
+    return new PathPlannerAuto("snipeAuto");
   }
 }

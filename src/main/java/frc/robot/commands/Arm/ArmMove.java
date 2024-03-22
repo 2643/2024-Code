@@ -6,17 +6,17 @@ package frc.robot.commands.Arm;
 
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.ArmLift;
+import frc.robot.subsystems.Arm;
 // import frc.robot.subsystems.ArmLift.ArmLiftStates;
 // import frc.robot.subsystems.Wrist.WristpositionStates;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ArmMove extends Command {
-  ArmLift.positionStates state;
-  // ArmLift.positionStates dummy;
+  Arm.armPositionStates state;
+  // ArmLift.armPositionStates dummy;
 
   /** Creates a new ArmLift. */
-  public ArmMove(ArmLift.positionStates state) {
+  public ArmMove(Arm.armPositionStates state) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_armLift); // Used to add parameters to the subsystem
     this.state = state;
@@ -37,18 +37,21 @@ public class ArmMove extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    // if (RobotContainer.autoAngleButton.getAsBoolean()) {
+    //   RobotContainer.m_armLift.movePos(RobotContainer.m_vision.autoArm());
+    // }
     //System.out.println(state);
-    // dummy = ArmLift.positionStates.DUMMY;
-    if (state == ArmLift.positionStates.AMP) { // Checks what state the arm is set to right now and moves to the
-                                               // corresponding position
+    // dummy = ArmLift.armPositionStates.DUMMY;
+     if (state == Arm.armPositionStates.AMP) { 
       RobotContainer.m_armLift.movePos(Constants.AMP);
-    } else if (state == ArmLift.positionStates.FLOOR) {
+    } else if (state == Arm.armPositionStates.FLOOR) {
       RobotContainer.m_armLift.movePos(Constants.FLOOR);
-    } else if (state == ArmLift.positionStates.SPEAKER) {
+    } else if (state == Arm.armPositionStates.SPEAKER) {
       RobotContainer.m_armLift.movePos(Constants.SPEAKER);
-    } else if (state == ArmLift.positionStates.REST) {
+    } else if (state == Arm.armPositionStates.REST) {
       RobotContainer.m_armLift.movePos(Constants.REST);
+    } else if (state == Arm.armPositionStates.SNIPE) {
+      RobotContainer.m_armLift.movePos(RobotContainer.m_vision.autoArm());
     }
   }
 
