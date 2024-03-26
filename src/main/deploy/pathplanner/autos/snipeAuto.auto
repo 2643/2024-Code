@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3073531650078651,
-      "y": 5.534643497870508
+      "x": 0.76,
+      "y": 6.6
     },
-    "rotation": 0
+    "rotation": 59.66126012166026
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,54 @@
           "type": "named",
           "data": {
             "name": "Reset"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Snipe"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.65
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Floor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "0.65"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "side note fix"
           }
         },
         {
@@ -30,39 +78,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Floor"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "this is a better path"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.3
+            "waitTime": 0.4
           }
         },
         {
@@ -80,56 +98,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Floor"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.65
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "better third note"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "RestArm"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RestWrist"
-                }
-              }
-            ]
+            "name": "Rest"
           }
         }
       ]

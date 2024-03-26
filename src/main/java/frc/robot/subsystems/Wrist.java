@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,7 +27,12 @@ import frc.robot.RobotContainer;
 
 public class Wrist extends SubsystemBase {
 
+  double kS = 0;
+  double kG = 0;
+  double kV = 0;
+
   Timer time;
+  ArmFeedforward wristFF = new ArmFeedforward(kS, kG, kV);
 
   public static enum moveJoystick { //States to check what direction the joystick is moving
     Up,
@@ -91,6 +97,11 @@ public class Wrist extends SubsystemBase {
   GenericEntry targetPosWEntry = Shuffleboard.getTab(  "WRIST").add("Target Position Wrist", 0).getEntry();
   GenericEntry PosErrWEntry = Shuffleboard.getTab("WRIST").add("Pos Err Wrist", 0).getEntry();
 
+  GenericEntry kSEntry = Shuffleboard.getTab("WRIST").add("kS", 0).getEntry();
+  GenericEntry kGEntry = Shuffleboard.getTab("WRIST").add("kG", 0).getEntry();
+  GenericEntry kVEntry = Shuffleboard.getTab("WRIST").add("kV", 0).getEntry();
+
+
   // states
 
   GenericEntry wristStateEntry = Shuffleboard.getTab("Game").add("Wrist State",  WristState.toString()).getEntry();
@@ -113,14 +124,15 @@ public class Wrist extends SubsystemBase {
     
     //tune PID and also tune configurations
 
-    slot0Configs.kP = 30; //30
+    slot0Configs.kP = 30;
     slot0Configs.kI = 0; 
-    slot0Configs.kD = 0; 
-
+    slot0Configs.kD = 0;
+    slot0Configs.kS = 0;
+    slot0Configs.kG = 0;
     slot0Configs.kV = 0; 
     
-    motionMagicConfigs.MotionMagicAcceleration = 80; 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 85; 
+    motionMagicConfigs.MotionMagicAcceleration = 70; 
+    motionMagicConfigs.MotionMagicCruiseVelocity = 75; 
 
     wristMotor.getConfigurator().apply(talonFXConfigs);
     // targetPosition=0;
@@ -146,7 +158,7 @@ public class Wrist extends SubsystemBase {
 
   public void movePos(double pos) {
     wristMotor.setControl(m_position.withPosition(pos * Constants.gearRatioWrist));
-    //wristMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
+    //wristMotor. (m_position.withFeedForward(AuxiliaryFF));
     targetPosition = pos;
     setTargetPos(targetPosition);
     targetPosWEntry.setDouble(targetPosition);
@@ -228,11 +240,13 @@ public class Wrist extends SubsystemBase {
     //System.out.println("WRIST"+ getWristState());
     //change the feed forward to correspond the wrist formula
     wristAngle = -34 + ((getPos()*360/Constants.gearRatioWrist) - (RobotContainer.m_armLift.getPos()*360/Constants.gearRatioArm)); //try removing gear ratios
-    AuxiliaryFF = -0.15 * Math.sin(Math.toRadians(wristAngle)); //-0.128 
+    AuxiliaryFF = /*FFWEntry.getDouble(-0.15)*/ -0.15 * Math.sin(Math.toRadians(wristAngle)); //-0.128 
     wristMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
     
     //System.out.println(WristgetPositionState());
-    FFWEntry.setDouble(AuxiliaryFF);
+    //FFWEntry.setDouble(AuxiliaryFF);
+    // wristFF = new ArmFeedforward(kS, kG, kV);
+
     WAngleEntry.setDouble(wristAngle);
     limitSwitchWEntry.setBoolean(getLimitSwitch());
     currentPosWEntry.setDouble(getPos()/72.0167590726);

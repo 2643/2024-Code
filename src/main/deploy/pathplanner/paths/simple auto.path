@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3087496952180357,
-        "y": 5.526325532189131
+        "x": 1.2936929304195008,
+        "y": 5.562592361437477
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3087496952180357,
-        "y": 5.526325532189131
+        "x": 2.7277886970206935,
+        "y": 5.549898039937724
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 5.526325532189131
+        "x": 2.876923002611382,
+        "y": 5.562592361437477
       },
       "prevControl": {
-        "x": 2.9684975599978354,
-        "y": 5.52672335328137
+        "x": 2.8808319755568377,
+        "y": 5.55803470653916
       },
       "nextControl": {
-        "x": 3.0315024400021646,
-        "y": 5.525927711096892
+        "x": 2.876136403523507,
+        "y": 5.563509494207616
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.31,
-        "y": 5.61
+        "x": 2.1511646822517965,
+        "y": 5.639691507172643
       },
       "prevControl": {
-        "x": 1.312981634209307,
-        "y": 5.60787828750806
+        "x": 2.152689250885886,
+        "y": 5.639750176359506
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,30 +63,13 @@
           ]
         }
       }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 1.55,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Speaker"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 507.0,
-    "maxAngularAcceleration": 540.0
+    "maxAngularVelocity": 420.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,

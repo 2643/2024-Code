@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2912184467669845,
-        "y": 5.49
+        "x": 2.15,
+        "y": 5.64
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2912184467669854,
-        "y": 5.49
+        "x": 2.05524038940208,
+        "y": 6.5975804127733415
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.236021044394448,
-        "y": 7.169896811064268
+        "x": 2.870242740811003,
+        "y": 6.900788999685267
       },
       "prevControl": {
-        "x": 3.5671111912453286,
-        "y": 5.441985203171432
+        "x": 2.8859299616610663,
+        "y": 6.909408999892593
       },
       "nextControl": {
-        "x": 3.2347528607522094,
-        "y": 7.176515278141004
+        "x": 2.1375932816680687,
+        "y": 6.498204083588859
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.28,
-        "y": 5.58
+        "x": 1.35,
+        "y": 5.372197098432369
       },
       "prevControl": {
-        "x": 1.2766139300195312,
-        "y": 5.581261110776102
+        "x": 1.6916078439324977,
+        "y": 6.144869668925447
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,12 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": 115.26765300989977,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 0,
+      "rotationDegrees": 54.77607334257259,
       "rotateFast": false
     }
   ],
@@ -60,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -74,34 +69,17 @@
           ]
         }
       }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 1.5,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Speaker"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 507.0,
-    "maxAngularAcceleration": 540.0
+    "maxAngularVelocity": 420.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -0.12749970355397033,
     "rotateFast": false
   },
   "reversed": false,

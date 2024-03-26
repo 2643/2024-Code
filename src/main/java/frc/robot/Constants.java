@@ -49,13 +49,13 @@ public final class Constants {
   public static final double wristLength = 11.4 * 0.0254;
 
 
-  public static final double AMP = -0.225;
+  public static final double AMP = -0.218;
   public static final double REST = 0;
   public static final double SPEAKER = -0.15;
   public static final double FLOOR = 0;
 
   
-  public static final double AMP_WRIST =0.62;
+  public static final double AMP_WRIST = 0.63;
   public static final double REST_WRIST = 0;
   public static final double SPEAKER_WRIST = 0;
   public static final double FLOOR_WRIST = 0.46;
@@ -118,7 +118,7 @@ public final class Constants {
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
         public static final double openLoopRamp = 0.25;
-        public static final double closedLoopRamp = 0.0;
+        public static final double closedLoopRamp = 0.25;
 
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;

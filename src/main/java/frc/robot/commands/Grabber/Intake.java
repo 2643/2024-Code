@@ -25,7 +25,7 @@ public class Intake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.m_Grabber.grabberIntake(-0.3, 0.5);
+    RobotContainer.m_Grabber.grabberIntake(-0.4, 0.6);
   }
 
   // Called once the command ends or is interrupted.

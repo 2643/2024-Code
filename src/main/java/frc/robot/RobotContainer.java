@@ -90,7 +90,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Outtake", new Outtake().withTimeout(1));
     NamedCommands.registerCommand("RestWrist", new WristMove(wristPositionStates.REST));
     NamedCommands.registerCommand("RestArm", new ArmMove(armPositionStates.REST));
-    NamedCommands.registerCommand("StopGrab", new StopGrabber());
+    NamedCommands.registerCommand("StopGrab", new StopGrabber().withTimeout(0.1));
     NamedCommands.registerCommand("Intake", new Intake());
     NamedCommands.registerCommand("Speaker", new SpeakerPosRoutine());
     NamedCommands.registerCommand("Rest", new RestPosRoutine());

@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
   final double maxDis = -4;
   final double minDis = 21;
   double armPercent;
-  double offset = Units.degreesToRadians(100);
+  double offset = Units.degreesToRadians(100.7);
   double trig;
   double yDisShooterSpeaker = Units.inchesToMeters(66.5);
 
