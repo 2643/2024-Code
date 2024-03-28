@@ -25,7 +25,7 @@ public class Outtake extends Command {
     if (Arm.getPositionState() == armPositionStates.AMP)
       RobotContainer.m_Grabber.grabberOuttake(0.5, -0.4);
     else
-      RobotContainer.m_Grabber.grabberOuttake(1, -0.6);
+      RobotContainer.m_Grabber.grabberOuttake(1, -0.8);
     // if (!isActive) {
     //   isActive = true;
     //   time.start();

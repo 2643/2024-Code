@@ -46,8 +46,8 @@ public class RobotContainer {
   public final static Grabber m_Grabber = new Grabber();
 
   public static Joystick driver = new Joystick(1);
-  public  JoystickButton zeroGyro = new JoystickButton(driver, 1);
-  public static JoystickButton robotCentric = new JoystickButton(driver, 2);
+  public  JoystickButton zeroGyro = new JoystickButton(driver, 12);
+  public static JoystickButton robotCentric = new JoystickButton(driver, 1);
 
   public static Arm m_armLift = new Arm();
   public static Wrist m_wrist = new Wrist();
@@ -150,6 +150,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     // An example command will be run in autonomous
-    return new PathPlannerAuto("snipeAuto");
+    return new PathPlannerAuto("simpleAuto");
   }
 }

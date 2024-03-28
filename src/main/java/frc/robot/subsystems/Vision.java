@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
   final double maxDis = -4;
   final double minDis = 21;
   double armPercent;
-  double offset = Units.degreesToRadians(100.7);
+  double offset = Units.degreesToRadians(99.5);
   double trig;
   double yDisShooterSpeaker = Units.inchesToMeters(66.5);
 
@@ -37,7 +37,7 @@ public class Vision extends SubsystemBase {
   // GenericEntry autoDEntry = Shuffleboard.getTab("autoPID").add("D", 0).getEntry();
   GenericEntry angleOffset = Shuffleboard.getTab("autoPID").add("angle", 100).getEntry();
   GenericEntry errorEntry = Shuffleboard.getTab("autoPID").add("Error", 0).getEntry();
-  GenericEntry turnEntry = Shuffleboard.getTab("autoPID").add("Turn", 0).getEntry();
+  //GenericEntry turnEntry = Shuffleboard.getTab("autoPID").add("Turn", 0).getEntry();
   LinearFilter autoAimFilter = LinearFilter.movingAverage(10);
   MedianFilter outlierFilter = new MedianFilter(7);
 
@@ -52,7 +52,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    offset = Units.degreesToRadians(angleOffset.getDouble(100));
+    //offset = Units.degreesToRadians(angleOffset.getDouble(100));
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-smokey");
     NetworkTableEntry botPoseBlue = table.getEntry("botpose_wpiblue");
@@ -90,14 +90,14 @@ public class Vision extends SubsystemBase {
 
   // needs to be readjusted
 
-  public double autoAngle() {    
+  public double autoAngle() {
     targetX = x;
     if (targetX < 0) {
-      turnEntry.setDouble(autoAnglePID.calculate(targetX) - 0.1);
+      //turnEntry.setDouble(autoAnglePID.calculate(targetX) - 0.1);
       return autoAnglePID.calculate(targetX - 0.2);
     }
     else
-      turnEntry.setDouble(autoAnglePID.calculate(targetX + 2));
+      //turnEntry.setDouble(autoAnglePID.calculate(targetX + 2));
       return autoAnglePID.calculate(targetX + 0.2);
   }
 
