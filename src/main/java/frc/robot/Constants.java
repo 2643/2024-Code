@@ -49,9 +49,9 @@ public final class Constants {
   public static final double wristLength = 11.4 * 0.0254;
 
 
-  public static final double AMP = -0.218;
+  public static final double AMP = -0.215;
   public static final double REST = 0;
-  public static final double SPEAKER = -0.15;
+  public static final double SPEAKER = -0.145 ;
   public static final double FLOOR = 0;
 
   

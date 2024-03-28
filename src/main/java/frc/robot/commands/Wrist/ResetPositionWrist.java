@@ -12,7 +12,7 @@ import frc.robot.subsystems.Wrist.wristPositionStates;
 
 public class ResetPositionWrist extends Command {
   boolean finish = false;
-  boolean flag = false;
+  //boolean flag = false;
   boolean notInInit = false;
   static double faketarget = 0;
 
@@ -39,7 +39,7 @@ public class ResetPositionWrist extends Command {
       RobotContainer.m_wrist.disableMotor();
       RobotContainer.m_wrist.setWristState(WristStates.NOT_INITIALIZED);
       finish = true;
-      flag = true;
+      //flag = true;
       notInInit = true;
     }
 
@@ -50,7 +50,7 @@ public class ResetPositionWrist extends Command {
   public void execute() {
     //System.out.println(RobotContainer.m_wrist.getWristState() + "wrist");
     if (RobotContainer.m_wrist.getWristState() == WristStates.INITIALIZING) {
-      if (!(RobotContainer.m_wrist.getLimitSwitch()) && !flag) { // Checks if the arm moved out of the limit
+      if (!RobotContainer.m_wrist.getLimitSwitch() /* && !flag*/) { // Checks if the arm moved out of the limit
         // switch
         RobotContainer.m_wrist.setPos(0);
         //System.out.println("switched states");

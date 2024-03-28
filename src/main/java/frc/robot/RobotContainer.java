@@ -46,8 +46,8 @@ public class RobotContainer {
   public final static Grabber m_Grabber = new Grabber();
 
   public static Joystick driver = new Joystick(1);
-  public  JoystickButton zeroGyro = new JoystickButton(driver, 12);
-  public static JoystickButton robotCentric = new JoystickButton(driver, 1);
+  public  JoystickButton zeroGyro = new JoystickButton(driver, 1);
+  public static JoystickButton robotCentric = new JoystickButton(driver, 12);
 
   public static Arm m_armLift = new Arm();
   public static Wrist m_wrist = new Wrist();
@@ -78,7 +78,6 @@ public class RobotContainer {
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   ComplexWidget ShuffleBoardAutonomousRoutines = Shuffleboard.getTab("Driver").add("Autonomous Routines Selector", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 2).withPosition(0, 2);
-  public final Command SpeakerRoutine = new SpeakerRoutine();
 
   // public final Command AmpRoutine = new AmpRoutine();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -88,8 +87,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("AmpWrist", new WristMove(wristPositionStates.SPEAKER));
     NamedCommands.registerCommand("AmpArm", new ArmMove(armPositionStates.SPEAKER));
     NamedCommands.registerCommand("Outtake", new Outtake().withTimeout(1));
-    NamedCommands.registerCommand("RestWrist", new WristMove(wristPositionStates.REST));
-    NamedCommands.registerCommand("RestArm", new ArmMove(armPositionStates.REST));
     NamedCommands.registerCommand("StopGrab", new StopGrabber().withTimeout(0.1));
     NamedCommands.registerCommand("Intake", new Intake());
     NamedCommands.registerCommand("Speaker", new SpeakerPosRoutine());
@@ -100,7 +97,10 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     autoChooser.setDefaultOption("SPEAKER Routine", new SpeakerRoutine());
-    autoChooser.addOption("New Auto", new PathPlannerAuto("intake"));
+    autoChooser.addOption("SidePathAway", new PathPlannerAuto("side"));
+    autoChooser.addOption("MiddlePath", new PathPlannerAuto("simpleAuto"));
+    autoChooser.addOption("guh", new PathPlannerAuto("guh"));
+    autoChooser.addOption("SidePathStage", new PathPlannerAuto("sideAutoStage"));
     
   }
  
@@ -150,6 +150,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     // An example command will be run in autonomous
-    return new PathPlannerAuto("simpleAuto");
+    return autoChooser.getSelected();
   }
 }
