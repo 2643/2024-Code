@@ -81,7 +81,7 @@ public class Swerve extends SubsystemBase {
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(0.06, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(1.0, 0.0, 0.0), // Rotation PID constants
-                    3, // Max module speed, in m/s\
+                    4.5, // Max module speed, in m/s\
                     0.539, // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
@@ -131,7 +131,7 @@ public class Swerve extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
         mSpeeds = speeds;
         for(SwerveModule mod : mSwerveMods){
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], false);
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], true);
         }
     }
 
