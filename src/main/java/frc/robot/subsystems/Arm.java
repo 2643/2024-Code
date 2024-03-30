@@ -124,7 +124,7 @@ public class Arm extends SubsystemBase {
 
     //rightArmMotor.setControl(new Follower(Constants.leftmotorPort, true)); //Follower master the rightArmMotor is reversed b/c double linked arm
     Follower rightFollower = new Follower(Constants.leftmotorPort, true);
-    rightFollower.withUpdateFreqHz(20);
+    //rightFollower.withUpdateFreqHz(20);
     rightArmMotor.setControl(rightFollower);
     leftArmMotor.setNeutralMode(NeutralModeValue.Brake);
     rightArmMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -143,7 +143,7 @@ public class Arm extends SubsystemBase {
   // }
 
   public void movePos(double pos) {
-    leftArmMotor.setControl(m_position.withPosition(pos * Constants.gearRatioArm));
+    leftArmMotor.setControl(m_position.withPosition(pos * Constants.gearRatioArm)); //
     //leftArmMotor.setControl(m_position.withFeedForward(AuxiliaryFF));
     targetPos = pos;
     targetPosEntry.setDouble(targetPos);

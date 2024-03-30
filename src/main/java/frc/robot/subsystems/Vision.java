@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
   final double maxDis = -4;
   final double minDis = 21;
   double armPercent;
-  double offset = Units.degreesToRadians(98.5);
+  double offset = Units.degreesToRadians(98);
   double trig;
   double yDisShooterSpeaker = Units.inchesToMeters(66.5);
 
@@ -104,6 +104,13 @@ public class Vision extends SubsystemBase {
   public double getTagPose() {
     System.out.println(angularLockPID.calculate(botPoseBlueTable[5]));
     return angularLockPID.calculate(botPoseBlueTable[5]);
+  }
+
+  public boolean isApriltag() {
+    if (x == 0 && y == 0)
+      return false;
+    else
+      return true;
   }
 
   public double getError() {

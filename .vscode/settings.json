@@ -27,6 +27,7 @@
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
   "cSpell.words": [
-    "faketarget"
+    "faketarget",
+    "MBR"
   ]
 }

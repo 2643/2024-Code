@@ -101,7 +101,8 @@ public class RobotContainer {
     autoChooser.addOption("MiddlePath", new PathPlannerAuto("simpleAuto"));
     autoChooser.addOption("guh", new PathPlannerAuto("guh"));
     autoChooser.addOption("SidePathStage", new PathPlannerAuto("sideAutoStage"));
-    
+    autoChooser.addOption("MiddlePathStage", new PathPlannerAuto("Copy of simpleAuto"));
+    autoChooser.addOption("Nothing", new PathPlannerAuto("nothing"));
   }
  
   /**

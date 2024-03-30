@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -36,7 +35,7 @@ public class Grabber extends SubsystemBase {
   double neoSpeed;
 
   
-  //TODO: VELOCITY LIMIT DOES NOT WORK, but it works so who really cares
+  //TOD: VELOCITY LIMIT DOES NOT WORK, but it works so who really cares
 
   public Grabber() {
     // ... why is this here?

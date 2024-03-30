@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
+    CameraServer.startAutomaticCapture();
     m_robotContainer = new RobotContainer();
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
@@ -133,6 +134,13 @@ public class Robot extends TimedRobot {
     isCurrentPos = Arm.getPositionState();
     CommandScheduler.getInstance().setDefaultCommand(RobotContainer.s_Swerve, new TeleopSwerve());
 
+    if (RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZING) {
+      CommandScheduler.getInstance().schedule(new ResetPositionArm());
+    }
+    if (RobotContainer.m_wrist.getWristState() == WristStates.NOT_INITIALIZED) {
+      CommandScheduler.getInstance().schedule(new ResetPositionWrist());
+    }
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -163,12 +171,6 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(new WristMove(isCurrentWristPos));
     }
 
-    if (RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZING) {
-      CommandScheduler.getInstance().schedule(new ResetPositionArm());
-    }
-    if (RobotContainer.m_wrist.getWristState() == WristStates.NOT_INITIALIZED) {
-      CommandScheduler.getInstance().schedule(new ResetPositionWrist());
-    }
 
     if (RobotContainer.autoAngleButton.getAsBoolean() && RobotContainer.m_armLift.getArmLiftState() == ArmLiftStates.INITIALIZED && RobotContainer.m_wrist.getWristState() == WristStates.INITIALIZED) //{
       CommandScheduler.getInstance().schedule(new ParallelCommandGroup(new ArmMove(armPositionStates.SNIPE), new WristMove(wristPositionStates.SNIPE)));

@@ -26,7 +26,7 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
-  public static final int motorID = 17;
+  public static final int motorID = 15;
   public static final int jsID = 0;
   public static final int intakeButtonID = 1;
   public static final int outtakeButtonID = 12;
@@ -58,7 +58,7 @@ public final class Constants {
   public static final double AMP_WRIST = 0.63;
   public static final double REST_WRIST = 0;
   public static final double SPEAKER_WRIST = 0;
-  public static final double FLOOR_WRIST = 0.46;
+  public static final double FLOOR_WRIST = 0.47;
   // public static final double FLOOR = 0.01;
   // public static final double COUNT_PER_DEGREES = 0;
 
