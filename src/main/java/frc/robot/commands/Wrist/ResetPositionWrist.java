@@ -26,8 +26,8 @@ public class ResetPositionWrist extends Command {
   @Override
   public void initialize() {
     RobotContainer.m_wrist.setWristState(Wrist.WristStates.INITIALIZING);
-    RobotContainer.m_wrist.setPos(0);
-    RobotContainer.m_wrist.movePos(0);
+    // RobotContainer.m_wrist.setPos(0);
+    // RobotContainer.m_wrist.movePos(0);
 
     // RobotContainer.m_Wrist.setVelocity(0.5); Doesn't work
     // RobotContainer.m_Wrist.setAcceleration(2); Doesn't work

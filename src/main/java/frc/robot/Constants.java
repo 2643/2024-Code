@@ -26,7 +26,7 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
-  public static final int motorID = 15;
+  public static final int motorID = 17;
   public static final int jsID = 0;
   public static final int intakeButtonID = 1;
   public static final int outtakeButtonID = 12;
