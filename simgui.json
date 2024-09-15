@@ -1,0 +1,13 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Driver/Autonomous Routines Selector": "String Chooser",
+      "/Shuffleboard/Driver/Autonoumous Routines Selector": "String Chooser",
+      "/Shuffleboard/Field/2024-Field": "Field2d"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}
