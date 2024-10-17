@@ -201,8 +201,10 @@ public class Wrist extends SubsystemBase {
 
     if (ctrlValue <= -0.95 && ctrlValue >= -0.98)
       return wristPositionStates.FLOOR;
-    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1)
+    else if (ctrlValue <= -0.06 && ctrlValue >= -0.1) {
+      System.out.println("AMPPFKPAPGPSP");
       return wristPositionStates.AMP;
+    }
     else if (ctrlValue <= -0.53 && ctrlValue >= -0.56)
       return wristPositionStates.REST; 
     else if (ctrlValue <= -0.27 && ctrlValue >= -0.29)

@@ -37,6 +37,8 @@ public class Vision extends SubsystemBase {
   // GenericEntry autoDEntry = Shuffleboard.getTab("autoPID").add("D", 0).getEntry();
   GenericEntry angleOffset = Shuffleboard.getTab("autoPID").add("angle", 100).getEntry();
   GenericEntry errorEntry = Shuffleboard.getTab("autoPID").add("Error", 0).getEntry();
+  GenericEntry aprilEntry = Shuffleboard.getTab("autoPID").add("Apriltag", false).getEntry();
+
   //GenericEntry turnEntry = Shuffleboard.getTab("autoPID").add("Turn", 0).getEntry();
   LinearFilter autoAimFilter = LinearFilter.movingAverage(10);
   MedianFilter outlierFilter = new MedianFilter(7);
@@ -78,6 +80,7 @@ public class Vision extends SubsystemBase {
     // SmartDashboard.putNumber("LimelightArea", area);
 
     errorEntry.setDouble(x);
+    aprilEntry.setBoolean(isApriltag());
     // This method will be called once per scheduler run
   }
 

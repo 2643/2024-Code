@@ -181,7 +181,10 @@ public class TeleopSwerve extends Command {
       rotationVal = rotPid.calculate((RobotContainer.s_Swerve.getGyroYaw().getDegrees()), betterEncoderAngle); // m_feedforward.calculate(rotPid.getSetpoint().velocity, rotationVal, rotationVal, rotationVal, rotationVal);
       //rotationVal += -ff /* new_Var*/;  
     }
-    else if (!RobotContainer.turnSwitch.getAsBoolean() && RobotContainer.operatorBoard.isConnected() && RobotContainer.autoAngleButton.getAsBoolean() /*&& !((int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() <= RobotContainer.m_vision.autoAngle() + 5 && (int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() >= RobotContainer.m_vision.autoAngle() - 5)*/) {
+    else if (!RobotContainer.turnSwitch.getAsBoolean() && RobotContainer.operatorBoard.isConnected() && RobotContainer.autoAngleButton.getAsBoolean() && !RobotContainer.m_vision.isApriltag() /*&& !((int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() <= RobotContainer.m_vision.autoAngle() + 5 && (int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() >= RobotContainer.m_vision.autoAngle() - 5)*/) {
+      rotationVal = rotPid.calculate((RobotContainer.s_Swerve.getGyroYaw().getDegrees()), betterEncoderAngle);
+    }
+    else if (!RobotContainer.turnSwitch.getAsBoolean() && RobotContainer.operatorBoard.isConnected() && RobotContainer.autoAngleButton.getAsBoolean() && RobotContainer.m_vision.isApriltag() /*&& !((int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() <= RobotContainer.m_vision.autoAngle() + 5 && (int) RobotContainer.s_Swerve.getGyroYaw().getDegrees() >= RobotContainer.m_vision.autoAngle() - 5)*/) {
       rotationVal = RobotContainer.m_vision.autoAngle() * Constants.Swerve.maxAngularVelocity;
     }
     else if (!RobotContainer.autoAngleButton.getAsBoolean() && !RobotContainer.turnSwitch.getAsBoolean()) {

@@ -55,9 +55,10 @@ public final class Constants {
   public static final double FLOOR = 0;
 
   
-  public static final double AMP_WRIST = 0.63;
+  public static final double AMP_WRIST = 0.65
+  ;
   public static final double REST_WRIST = 0;
-  public static final double SPEAKER_WRIST = 0;
+  public static final double SPEAKER_WRIST = 0.01;
   public static final double FLOOR_WRIST = 0.47;
   // public static final double FLOOR = 0.01;
   // public static final double COUNT_PER_DEGREES = 0;
